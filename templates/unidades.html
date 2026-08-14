@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Unidades | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">CADASTRO</p>
+        <h2>Unidades de saúde</h2>
+        <p>Cadastre as unidades e mantenha os equipamentos organizados por local.</p>
+    </div>
+</section>
+
+<section class="grid-unidades">
+    <article class="painel">
+        <h3>Nova unidade</h3>
+
+        <form method="post" class="formulario">
+            <div class="campo">
+                <label for="codigo">Código da unidade *</label>
+                <input
+                    type="text"
+                    id="codigo"
+                    name="codigo"
+                    placeholder="Ex.: UBS001"
+                    maxlength="20"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="nome">Nome da unidade *</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Ex.: UBS Vila Alegre"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="tipo">Tipo</label>
+                <select id="tipo" name="tipo">
+                    <option value="">Selecione</option>
+                    <option value="UBS">UBS</option>
+                    <option value="ESF">ESF</option>
+                    <option value="CAPS">CAPS</option>
+                    <option value="Hospital">Hospital</option>
+                    <option value="UPA">UPA</option>
+                    <option value="SAMU">SAMU</option>
+                    <option value="Secretaria">Secretaria</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="endereco">Endereço</label>
+                <input
+                    type="text"
+                    id="endereco"
+                    name="endereco"
+                    placeholder="Rua, número e bairro"
+                >
+            </div>
+
+            <button class="botao botao--primario" type="submit">
+                Cadastrar unidade
+            </button>
+        </form>
+    </article>
+
+    <article class="painel">
+        <div class="titulo-painel">
+            <h3>Unidades cadastradas</h3>
+            <span class="contador">{{ unidades|length }}</span>
+        </div>
+
+        {% if unidades %}
+            <div class="tabela-responsiva">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Unidade</th>
+                            <th>Tipo</th>
+                            <th>Endereço</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unidade in unidades %}
+                            <tr>
+                                <td><strong>{{ unidade['codigo'] }}</strong></td>
+                                <td>{{ unidade['nome'] }}</td>
+                                <td>{{ unidade['tipo'] or '-' }}</td>
+                                <td>{{ unidade['endereco'] or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="estado-vazio">
+                Nenhuma unidade cadastrada. Use o formulário ao lado para iniciar.
+            </p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

@@ -34,13 +34,43 @@ def index():
     """Pa'gina inicial do sistema"""
     return render_template('index.html')
 
-@app.route('/unidades')
+@app.route('/unidades', methods=['GET', 'POST'])
 def unidades():
-    """Lista todas as unidades de saude"""
+    """Lista e cadastra unidades de saúde."""
+    if request.method == 'POST':
+        codigo = request.form['codigo'].strip().upper()
+        nome = request.form['nome'].strip()
+        tipo = request.form['tipo'].strip()
+        endereco = request.form['endereco'].strip()
+
+        if not codigo or not nome:
+            flash('Código e nome da unidade são obrigatórios.', 'erro')
+        else:
+            try:
+                conn = get_db_connection()
+                conn.execute(
+                    '''
+                    INSERT INTO unidades (codigo, nome, tipo, endereco)
+                    VALUES (?, ?, ?, ?)
+                    ''',
+                    (codigo, nome, tipo, endereco)
+                )
+                conn.commit()
+                conn.close()
+
+                flash('Unidade cadastrada com sucesso!', 'sucesso')
+                return redirect(url_for('unidades'))
+
+            except sqlite3.IntegrityError:
+                flash('Já existe uma unidade cadastrada com este código.', 'erro')
+
     conn = get_db_connection()
-    unidades = conn.execute('SELECT * FROM unidades ORDER BY nome').fetchall()
+    lista_unidades = conn.execute(
+        'SELECT * FROM unidades ORDER BY nome'
+    ).fetchall()
     conn.close()
-    return render_template('unidades.html', unidades=unidades)
+
+    return render_template('unidades.html', unidades=lista_unidades)
 
 @app.route('/equipamentos')
 def equipamentos():

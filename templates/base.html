@@ -25,9 +25,19 @@
         </nav>
     </header>
 
-    <main class="conteudo">
-        {% block content %}{% endblock %}
-    </main>
+<main class="conteudo">
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="alerta alerta--{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
 
     <footer class="rodape">
         <p>Sistema de Controle de Almoxarifado — Secretaria Municipal de Saúde</p>
