@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Início | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="boas-vindas">
+    <div>
+        <p class="texto-superior">PAINEL PRINCIPAL</p>
+        <h2>Controle de equipamentos e insumos</h2>
+        <p>
+            Centralize o acompanhamento do almoxarifado da Secretaria
+            e dos equipamentos distribuídos nas unidades de saúde.
+        </p>
+    </div>
+</section>
+
+<section class="atalhos" aria-label="Acessos rápidos">
+    <a class="card" href="{{ url_for('unidades') }}">
+        <span class="card__icone">🏥</span>
+        <h3>Unidades</h3>
+        <p>Cadastre e consulte as unidades de saúde.</p>
+    </a>
+
+    <a class="card" href="{{ url_for('equipamentos') }}">
+        <span class="card__icone">🩺</span>
+        <h3>Equipamentos</h3>
+        <p>Controle patrimônio, situação e localização dos equipamentos.</p>
+    </a>
+
+    <a class="card" href="{{ url_for('insumos') }}">
+        <span class="card__icone">📦</span>
+        <h3>Insumos</h3>
+        <p>Acompanhe quantidade, localização e vencimento dos materiais.</p>
+    </a>
+</section>
+{% endblock %}

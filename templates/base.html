@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Almoxarifado | Secretaria de Saúde{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topo">
+        <div class="marca">
+            <span class="marca__icone">+</span>
+            <div>
+                <h1>Almoxarifado</h1>
+                <p>Secretaria Municipal de Saúde</p>
+            </div>
+        </div>
+
+        <nav class="menu" aria-label="Menu principal">
+            <a href="{{ url_for('index') }}">Início</a>
+            <a href="{{ url_for('unidades') }}">Unidades</a>
+            <a href="{{ url_for('equipamentos') }}">Equipamentos</a>
+            <a href="{{ url_for('insumos') }}">Insumos</a>
+        </nav>
+    </header>
+
+    <main class="conteudo">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="rodape">
+        <p>Sistema de Controle de Almoxarifado — Secretaria Municipal de Saúde</p>
+    </footer>
+</body>
+</html>
