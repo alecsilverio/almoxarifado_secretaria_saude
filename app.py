@@ -96,11 +96,11 @@ def equipamentos():
                         """
                         INSERT INTO equipamentos
                         (id_unidade, patrimonio, nome, modelo, marca, numero_serie,
-                         data_entrada, situacao, observacao)
+                        data_entrada, situacao, observacao)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (id_unidade, patrimonio, nome, modelo, marca, numero_serie,
-                         data_entrada, situacao, observacao),
+                        data_entrada, situacao, observacao),
                     )
 
                 flash("Equipamento cadastrado com sucesso!", "sucesso")
@@ -130,9 +130,45 @@ def equipamentos():
     )
 
 
-@app.route("/insumos")
+@app.route("/insumos", methods=["GET", "POST"])
 def insumos():
-    """Lista insumos do almoxarifado e das unidades."""
+    """Lista e cadastra insumos do almoxarifado e das unidades."""
+    if request.method == "POST":
+        id_unidade = request.form.get("id_unidade")
+        id_unidade = int(id_unidade) if id_unidade else None
+
+        modelo = request.form["modelo"].strip()
+        marca = request.form["marca"].strip()
+        numero_serie = request.form["numero_serie"].strip()
+        quantidade = int(request.form["quantidade"] or 0)
+        data_entrega = request.form["data_entrega"].strip() or None
+        data_fabricacao = request.form["data_fabricacao"].strip() or None
+        vencimento = request.form["vencimento"].strip() or None
+        localizacao = request.form["localizacao"].strip()
+        observacao = request.form["observacao"].strip()
+
+        if not modelo or not marca:
+            flash("Modelo e marca são obrigatórios.", "erro")
+        else:
+            try:
+                with get_db_connection() as conn:
+                    conn.execute(
+                        """
+                        INSERT INTO insumos
+                        (id_unidade, modelo, marca, numero_serie, quantidade,
+                        data_entrega, data_fabricacao, vencimento, localizacao, observacao)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (id_unidade, modelo, marca, numero_serie, quantidade,
+                        data_entrega, data_fabricacao, vencimento, localizacao, observacao),
+                    )
+
+                flash("Insumo cadastrado com sucesso!", "sucesso")
+                return redirect(url_for("insumos"))
+
+            except Exception as e:
+                flash(f"Erro ao cadastrar insumo: {e}", "erro")
+
     with get_db_connection() as conn:
         lista_insumos = conn.execute(
             """
@@ -143,7 +179,15 @@ def insumos():
             """
         ).fetchall()
 
-    return render_template("insumos.html", insumos=lista_insumos)
+        lista_unidades = conn.execute(
+            "SELECT id_unidade, codigo, nome FROM unidades ORDER BY nome"
+        ).fetchall()
+
+    return render_template(
+        "insumos.html",
+        insumos=lista_insumos,
+        unidades=lista_unidades
+    )
 
 
 if __name__ == "__main__":

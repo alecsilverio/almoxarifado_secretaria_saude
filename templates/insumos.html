@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Insumos | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">CADASTRO</p>
+        <h2>Insumos e materiais</h2>
+        <p>Controle o almoxarifado central e os insumos distribuídos nas unidades.</p>
+    </div>
+</section>
+
+<section class="grid-insumos">
+    <article class="painel">
+        <h3>Novo insumo</h3>
+
+        <form method="post" class="formulario">
+            <div class="campo">
+                <label for="id_unidade">Localização</label>
+                <select id="id_unidade" name="id_unidade">
+                    <option value="">Almoxarifado Central</option>
+                    {% for unidade in unidades %}
+                        <option value="{{ unidade['id_unidade'] }}">
+                            {{ unidade['codigo'] }} - {{ unidade['nome'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <small>Deixe em branco se for do almoxarifado central.</small>
+            </div>
+
+            <div class="campo">
+                <label for="modelo">Modelo *</label>
+                <input
+                    type="text"
+                    id="modelo"
+                    name="modelo"
+                    placeholder="Ex.: Luva de Procedimento M"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="marca">Marca *</label>
+                <input
+                    type="text"
+                    id="marca"
+                    name="marca"
+                    placeholder="Ex.: Descartex"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="numero_serie">Número de série / Lote</label>
+                <input
+                    type="text"
+                    id="numero_serie"
+                    name="numero_serie"
+                    placeholder="Ex.: LOTE123456"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="quantidade">Quantidade</label>
+                <input
+                    type="number"
+                    id="quantidade"
+                    name="quantidade"
+                    placeholder="0"
+                    min="0"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="data_entrega">Data de entrega</label>
+                <input
+                    type="date"
+                    id="data_entrega"
+                    name="data_entrega"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="data_fabricacao">Data de fabricação</label>
+                <input
+                    type="date"
+                    id="data_fabricacao"
+                    name="data_fabricacao"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="vencimento">Vencimento</label>
+                <input
+                    type="date"
+                    id="vencimento"
+                    name="vencimento"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="localizacao">Localização (rua/prateleira)</label>
+                <input
+                    type="text"
+                    id="localizacao"
+                    name="localizacao"
+                    placeholder="Ex.: Rua A, Prateleira 3"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="observacao">Observação</label>
+                <textarea
+                    id="observacao"
+                    name="observacao"
+                    rows="3"
+                    placeholder="Detalhes adicionais"
+                ></textarea>
+            </div>
+
+            <button class="botao botao--primario" type="submit">
+                Cadastrar insumo
+            </button>
+        </form>
+    </article>
+
+    <article class="painel">
+        <div class="titulo-painel">
+            <h3>Insumos cadastrados</h3>
+            <span class="contador">{{ insumos|length }}</span>
+        </div>
+
+        {% if insumos %}
+            <div class="tabela-responsiva">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Local</th>
+                            <th>Modelo</th>
+                            <th>Marca</th>
+                            <th>Lote</th>
+                            <th>Qtd</th>
+                            <th>Vencimento</th>
+                            <th>Localização</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for insumo in insumos %}
+                            <tr class="{% if insumo['vencimento'] and insumo['vencimento'] < '2026-09-26' %}linha-vencido{% endif %}">
+                                <td>{{ insumo['nome_unidade'] or 'Almoxarifado' }}</td>
+                                <td><strong>{{ insumo['modelo'] }}</strong></td>
+                                <td>{{ insumo['marca'] }}</td>
+                                <td>{{ insumo['numero_serie'] or '-' }}</td>
+                                <td>{{ insumo['quantidade'] }}</td>
+                                <td>
+                                    {% if insumo['vencimento'] %}
+                                        <span class="{% if insumo['vencimento'] < '2026-09-26' %}vencido{% elif insumo['vencimento'] < '2026-12-26' %}vence-logo{% endif %}">
+                                            {{ insumo['vencimento'] }}
+                                        </span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ insumo['localizacao'] or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="estado-vazio">
+                Nenhum insumo cadastrado. Use o formulário ao lado para iniciar.
+            </p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
