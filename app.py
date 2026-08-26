@@ -73,9 +73,42 @@ def unidades():
     return render_template("unidades.html", unidades=lista_unidades)
 
 
-@app.route("/equipamentos")
+@app.route("/equipamentos", methods=["GET", "POST"])
 def equipamentos():
-    """Lista equipamentos vinculados às unidades."""
+    """Lista e cadastra equipamentos vinculados às unidades."""
+    if request.method == "POST":
+        id_unidade = int(request.form["id_unidade"])
+        patrimonio = request.form["patrimonio"].strip().upper()
+        nome = request.form["nome"].strip()
+        modelo = request.form["modelo"].strip()
+        marca = request.form["marca"].strip()
+        numero_serie = request.form["numero_serie"].strip()
+        data_entrada = request.form["data_entrada"].strip() or None
+        situacao = request.form["situacao"].strip()
+        observacao = request.form["observacao"].strip()
+
+        if not id_unidade or not patrimonio:
+            flash("Unidade e patrimônio são obrigatórios.", "erro")
+        else:
+            try:
+                with get_db_connection() as conn:
+                    conn.execute(
+                        """
+                        INSERT INTO equipamentos
+                        (id_unidade, patrimonio, nome, modelo, marca, numero_serie,
+                         data_entrada, situacao, observacao)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (id_unidade, patrimonio, nome, modelo, marca, numero_serie,
+                         data_entrada, situacao, observacao),
+                    )
+
+                flash("Equipamento cadastrado com sucesso!", "sucesso")
+                return redirect(url_for("equipamentos"))
+
+            except sqlite3.IntegrityError:
+                flash("Já existe um equipamento com este patrimônio nesta unidade.", "erro")
+
     with get_db_connection() as conn:
         lista_equipamentos = conn.execute(
             """
@@ -86,9 +119,14 @@ def equipamentos():
             """
         ).fetchall()
 
+        lista_unidades = conn.execute(
+            "SELECT id_unidade, codigo, nome FROM unidades ORDER BY nome"
+        ).fetchall()
+
     return render_template(
         "equipamentos.html",
-        equipamentos=lista_equipamentos
+        equipamentos=lista_equipamentos,
+        unidades=lista_unidades
     )
 
 

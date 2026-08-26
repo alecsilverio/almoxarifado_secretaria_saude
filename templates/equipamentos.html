@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Equipamentos | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">CADASTRO</p>
+        <h2>Equipamentos clínicos</h2>
+        <p>Registre os equipamentos patrimoniais distribuídos nas unidades de saúde.</p>
+    </div>
+</section>
+
+<section class="grid-equipamentos">
+    <article class="painel">
+        <h3>Novo equipamento</h3>
+
+        <form method="post" class="formulario">
+            <div class="campo">
+                <label for="id_unidade">Unidade *</label>
+                <select id="id_unidade" name="id_unidade" required>
+                    <option value="">Selecione</option>
+                    {% for unidade in unidades %}
+                        <option value="{{ unidade['id_unidade'] }}">
+                            {{ unidade['codigo'] }} - {{ unidade['nome'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="patrimonio">Patrimônio *</label>
+                <input
+                    type="text"
+                    id="patrimonio"
+                    name="patrimonio"
+                    placeholder="Ex.: 12345-6"
+                    maxlength="30"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="nome">Nome do equipamento</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Ex.: Monitor Multiparâmetro"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="modelo">Modelo</label>
+                <input
+                    type="text"
+                    id="modelo"
+                    name="modelo"
+                    placeholder="Ex.: MX500"
+                > 
+            </div>
+
+            <div class="campo">
+                <label for="marca">Marca</label>
+                <input
+                    type="text"
+                    id="marca"
+                    name="marca"
+                    placeholder="Ex.: Philips"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="numero_serie">Número de série</label>
+                <input
+                    type="text"
+                    id="numero_serie"
+                    name="numero_serie"
+                    placeholder="Ex.: ABC123456"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="data_entrada">Data de entrada</label>
+                <input
+                    type="date"
+                    id="data_entrada"
+                    name="data_entrada"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="situacao">Situação</label>
+                <select id="situacao" name="situacao">
+                    <option value="">Selecione</option>
+                    <option value="Em uso">Em uso</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="Quebrado">Quebrado</option>
+                    <option value="Sucata">Sucata</option>
+                    <option value="Reserva">Reserva</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="observacao">Observação</label>
+                <textarea
+                    id="observacao"
+                    name="observacao"
+                    rows="3"
+                    placeholder="Detalhes adicionais"
+                ></textarea>
+            </div>
+
+            <button class="botao botao--primario" type="submit">
+                Cadastrar equipamento
+            </button>
+        </form>
+    </article>
+
+    <article class="painel">
+        <div class="titulo-painel">
+            <h3>Equipamentos cadastrados</h3>
+            <span class="contador">{{ equipamentos|length }}</span>
+        </div>
+
+        {% if equipamentos %}
+            <div class="tabela-responsiva">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Unidade</th>
+                            <th>Patrimônio</th>
+                            <th>Nome</th>
+                            <th>Modelo</th>
+                            <th>Marca</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipamento in equipamentos %}
+                        <tr>
+                            <td>{{ equipamento['nome_unidade'] }}</td>
+                            <td><strong>{{ equipamento['patrimonio'] }}</strong></td>
+                            <td>{{ equipamento['nome'] or '-' }}</td>
+                            <td>{{ equipamento['modelo'] or '-' }}</td>
+                            <td>{{ equipamento['marca'] or '-' }}</td>
+                            <td>
+                                <span class="badge badge--{{ equipamento['situacao']|lower|replace(' ', '-') }}">
+                                    {{ equipamento['situacao'] or '-' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="estado-vazio">
+                Nenhum equipamento cadastrado. Use o formulário ao lado para iniciar.
+            </p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS equipamentos (
     id_equipamento INTEGER PRIMARY KEY AUTOINCREMENT,
     id_unidade INTEGER NOT NULL,
     patrimonio TEXT NOT NULL,
+    nome TEXT,
     modelo TEXT,
     marca TEXT,
     numero_serie TEXT,

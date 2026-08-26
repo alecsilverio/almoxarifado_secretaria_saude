@@ -189,3 +189,65 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.grid-equipamentos {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(500px, 1.4fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.campo textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 6px;
+    outline: none;
+    font: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.campo textarea:focus {
+    border-color: var(--azul-institucional);
+    box-shadow: 0 0 0 3px rgba(23, 53, 87, 0.14);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: bold;
+}
+
+.badge--em-uso {
+    color: #155c41;
+    background: #e7f5ed;
+}
+
+.badge--manutencao {
+    color: #8f6b00;
+    background: #fff8dc;
+}
+
+.badge--quebrado {
+    color: #8f1014;
+    background: #fde8e8;
+}
+
+.badge--sucata {
+    color: #5c6b75;
+    background: #eef2f5;
+}
+
+.badge--reserva {
+    color: #146c94;
+    background: #eaf5fb;
+}
+
+@media (max-width: 950px) {
+    .grid-equipamentos {
+        grid-template-columns: 1fr;
+    }
+}
