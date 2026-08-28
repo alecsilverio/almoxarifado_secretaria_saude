@@ -6,8 +6,21 @@ Stack: Flask + SQLite + HTML/CSS/JS
 
 from pathlib import Path
 import sqlite3
+from functools import wraps
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+
+# Usuário e senha do administrador (altere em produção)
+ADMIN_USER = "admin"
+ADMIN_PASS = "admin"
 
 BASE_DIR = Path(__file__).resolve().parent
 DATABASE = BASE_DIR / "almoxarifado.db"
@@ -15,6 +28,44 @@ SCHEMA = BASE_DIR / "schema_almoxarifado.sql"
 
 app = Flask(__name__)
 app.secret_key = "chave_secreta_alterar_em_producao"
+app.config["SESSION_PERMANENT"] = True
+
+
+def login_required(f):
+    """Decorator para exigir login nas rotas."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "logged_in" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Tela de login do administrador."""
+    erro = None
+
+    if request.method == "POST":
+        usuario = request.form["usuario"].strip()
+        senha = request.form["senha"].strip()
+
+        if usuario == ADMIN_USER and senha == ADMIN_PASS:
+            session["logged_in"] = True
+            flash("Login realizado com sucesso!", "sucesso")
+            return redirect(url_for("index"))
+        else:
+            erro = "Usuário ou senha inválidos."
+
+    return render_template("login.html", erro=erro)
+
+
+@app.route("/logout")
+def logout():
+    """Realiza logout do administrador."""
+    session.pop("logged_in", None)
+    flash("Logout realizado com sucesso!", "sucesso")
+    return redirect(url_for("login"))
 
 
 def get_db_connection():
@@ -32,12 +83,14 @@ def init_db():
 
 
 @app.route("/")
+@login_required
 def index():
     """Página inicial do sistema."""
     return render_template("index.html")
 
 
 @app.route("/unidades", methods=["GET", "POST"])
+@login_required
 def unidades():
     """Lista e cadastra unidades de saúde."""
     if request.method == "POST":
@@ -74,6 +127,7 @@ def unidades():
 
 
 @app.route("/equipamentos", methods=["GET", "POST"])
+@login_required
 def equipamentos():
     """Lista e cadastra equipamentos vinculados às unidades."""
     if request.method == "POST":
@@ -131,6 +185,7 @@ def equipamentos():
 
 
 @app.route("/insumos", methods=["GET", "POST"])
+@login_required
 def insumos():
     """Lista e cadastra insumos do almoxarifado e das unidades."""
     if request.method == "POST":

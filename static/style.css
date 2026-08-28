@@ -251,3 +251,55 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.pagina-login {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, var(--azul-institucional), #0a1f33);
+}
+
+.container-login {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.cabecalho-login {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 32px;
+    color: var(--branco);
+}
+
+.formulario-login {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    border-radius: 12px;
+    background: var(--branco);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.formulario-login h2 {
+    margin: 0 0 8px;
+    color: var(--azul-institucional);
+}
+
+.formulario-login p {
+    margin: 0 0 24px;
+    color: var(--texto-suave);
+}
+
+.rodape--simples {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 24px;
+    color: var(--branco);
+    background: transparent;
+    border-top: 0;
+    text-align: center;
+}

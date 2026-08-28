@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Almoxarifado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="pagina-login">
+    <div class="container-login">
+        <header class="cabecalho-login">
+            <div class="marca">
+                <span class="marca__icone">+</span>
+                <div>
+                    <h1>Almoxarifado</h1>
+                    <p>Secretaria Municipal de Saúde</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="formulario-login">
+            <h2>Acesso do Administrador</h2>
+            <p>Faça login para acessar o sistema.</p>
+
+            {% if erro %}
+                <div class="alerta alerta--erro">
+                    {{ erro }}
+                </div>
+            {% endif %}
+
+            <form method="post" class="formulario">
+                <div class="campo">
+                    <label for="usuario">Usuário</label>
+                    <input
+                        type="text"
+                        id="usuario"
+                        name="usuario"
+                        placeholder="admin"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+
+                <button class="botao botao--primario" type="submit">
+                    Entrar
+                </button>
+            </form>
+        </main>
+
+        <footer class="rodape rodape--simples">
+            <p>Sistema de Controle de Almoxarifado</p>
+        </footer>
+    </div>
+</body>
+</html>
