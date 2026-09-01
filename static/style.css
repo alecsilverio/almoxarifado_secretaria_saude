@@ -303,3 +303,14 @@ body {
     border-top: 0;
     text-align: center;
 }
+.marca__logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
