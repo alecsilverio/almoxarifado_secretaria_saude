@@ -4,6 +4,7 @@ Equipamentos por Unidade + Insumos Centralizados
 Stack: Flask + SQLite + HTML/CSS/JS
 """
 
+import os
 from pathlib import Path
 import sqlite3
 from functools import wraps
@@ -19,15 +20,18 @@ from flask import (
 )
 
 # Usuário e senha do administrador (altere em produção)
-ADMIN_USER = "admin"
-ADMIN_PASS = "admin"
+ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
+ADMIN_PASS = os.environ.get("ADMIN_PASS", "admin")
 
 BASE_DIR = Path(__file__).resolve().parent
 DATABASE = BASE_DIR / "almoxarifado.db"
 SCHEMA = BASE_DIR / "schema_almoxarifado.sql"
 
 app = Flask(__name__)
-app.secret_key = "chave_secreta_alterar_em_producao"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "chave-apenas-para-desenvolvimento-local"
+)
 app.config["SESSION_PERMANENT"] = True
 
 
