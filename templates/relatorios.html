@@ -1,245 +1,227 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Relatórios | Sistema de Controle de Almoxarifado</title>
+{% block title %}Relatórios | Almoxarifado{% endblock %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">RELATÓRIOS</p>
+        <h2>Relatórios gerenciais</h2>
+        <p>
+            Consulte os dados cadastrados e exporte os relatórios
+            para arquivos CSV compatíveis com Excel e LibreOffice.
+        </p>
+    </div>
+</section>
 
-    <header class="topo">
+<!-- Cards de resumo -->
+<section class="cards-resumo">
+    <article class="card-resumo">
+        <span class="rotulo">Unidades</span>
+        <strong>{{ resumo["total_unidades"] }}</strong>
+    </article>
+
+    <article class="card-resumo">
+        <span class="rotulo">Equipamentos</span>
+        <strong>{{ resumo["total_equipamentos"] }}</strong>
+    </article>
+
+    <article class="card-resumo">
+        <span class="rotulo">Insumos</span>
+        <strong>{{ resumo["total_insumos"] }}</strong>
+    </article>
+
+    <article class="card-resumo alerta">
+        <span class="rotulo">Insumos vencidos</span>
+        <strong>{{ resumo["total_vencidos"] }}</strong>
+    </article>
+
+    <article class="card-resumo aviso">
+        <span class="rotulo">Próximos do vencimento</span>
+        <strong>{{ resumo["total_proximos_vencimento"] }}</strong>
+    </article>
+</section>
+
+<!-- Relatório de Unidades -->
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
         <div>
-            <h1>Sistema de Controle de Almoxarifado</h1>
-            <p>Relatórios gerenciais</p>
+            <h3>Relatório de Unidades</h3>
+            <p>Unidades cadastradas e seus totais de equipamentos e insumos.</p>
         </div>
 
-        <nav>
-            <a href="{{ url_for('index') }}">Início</a>
-            <a href="{{ url_for('unidades') }}">Unidades</a>
-            <a href="{{ url_for('equipamentos') }}">Equipamentos</a>
-            <a href="{{ url_for('insumos') }}">Insumos</a>
-            <a href="{{ url_for('relatorios') }}" class="ativo">Relatórios</a>
-            <a href="{{ url_for('logout') }}">Sair</a>
-        </nav>
-    </header>
+        <a
+            class="botao botao--secundario"
+            href="{{ url_for('relatorio_unidades_csv') }}"
+        >
+            Exportar CSV
+        </a>
+    </div>
 
-    <main class="container">
-        <section class="titulo-pagina">
-            <div>
-                <h2>Relatórios</h2>
-                <p>
-                    Consulte os dados cadastrados e exporte os relatórios
-                    para arquivos CSV compatíveis com Excel e LibreOffice.
-                </p>
-            </div>
-        </section>
+    <div class="tabela-responsiva">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Unidade</th>
+                    <th>Tipo</th>
+                    <th>Endereço</th>
+                    <th>Equipamentos</th>
+                    <th>Insumos</th>
+                </tr>
+            </thead>
 
-        <section class="cards-resumo">
-            <article class="card-resumo">
-                <span class="rotulo">Unidades</span>
-                <strong>{{ resumo["total_unidades"] }}</strong>
-            </article>
+            <tbody>
+                {% for unidade in relatorio_unidades %}
+                <tr>
+                    <td><strong>{{ unidade["codigo"] }}</strong></td>
+                    <td>{{ unidade["nome"] }}</td>
+                    <td>{{ unidade["tipo"] or "-" }}</td>
+                    <td>{{ unidade["endereco"] or "-" }}</td>
+                    <td>{{ unidade["total_equipamentos"] }}</td>
+                    <td>{{ unidade["total_insumos"] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="sem-registros">
+                        Nenhuma unidade cadastrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
-            <article class="card-resumo">
-                <span class="rotulo">Equipamentos</span>
-                <strong>{{ resumo["total_equipamentos"] }}</strong>
-            </article>
+<!-- Relatório de Equipamentos -->
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
+        <div>
+            <h3>Relatório de Equipamentos</h3>
+            <p>Equipamentos clínicos vinculados às unidades de saúde.</p>
+        </div>
 
-            <article class="card-resumo">
-                <span class="rotulo">Insumos</span>
-                <strong>{{ resumo["total_insumos"] }}</strong>
-            </article>
+        <a
+            class="botao botao--secundario"
+            href="{{ url_for('relatorio_equipamentos_csv') }}"
+        >
+            Exportar CSV
+        </a>
+    </div>
 
-            <article class="card-resumo alerta">
-                <span class="rotulo">Insumos vencidos</span>
-                <strong>{{ resumo["total_vencidos"] }}</strong>
-            </article>
+    <div class="tabela-responsiva">
+        <table>
+            <thead>
+                <tr>
+                    <th>Unidade</th>
+                    <th>Patrimônio</th>
+                    <th>Equipamento</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Nº de série</th>
+                    <th>Entrada</th>
+                    <th>Situação</th>
+                </tr>
+            </thead>
 
-            <article class="card-resumo aviso">
-                <span class="rotulo">Próximos do vencimento</span>
-                <strong>{{ resumo["total_proximos_vencimento"] }}</strong>
-            </article>
-        </section>
+            <tbody>
+                {% for equipamento in relatorio_equipamentos %}
+                <tr>
+                    <td>{{ equipamento["nome_unidade"] }}</td>
+                    <td><strong>{{ equipamento["patrimonio"] }}</strong></td>
+                    <td>{{ equipamento["nome"] or "-" }}</td>
+                    <td>{{ equipamento["marca"] or "-" }}</td>
+                    <td>{{ equipamento["modelo"] or "-" }}</td>
+                    <td>{{ equipamento["numero_serie"] or "-" }}</td>
+                    <td>{{ equipamento["data_entrada"] or "-" }}</td>
+                    <td>
+                        <span class="badge badge--{{ equipamento['situacao']|lower|replace(' ', '-') }}">
+                            {{ equipamento["situacao"] or "-" }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="sem-registros">
+                        Nenhum equipamento cadastrado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
-        <section class="painel-relatorio">
-            <div class="cabecalho-relatorio">
-                <div>
-                    <h3>Relatório de Unidades</h3>
-                    <p>Unidades cadastradas e seus totais de equipamentos e insumos.</p>
-                </div>
+<!-- Relatório de Insumos -->
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
+        <div>
+            <h3>Relatório de Insumos</h3>
+            <p>Insumos do almoxarifado central e das unidades cadastradas.</p>
+        </div>
 
-                <a
-                    class="botao botao-secundario"
-                    href="{{ url_for('relatorio_unidades_csv') }}"
-                >
-                    Exportar CSV
-                </a>
-            </div>
+        <a
+            class="botao botao--secundario"
+            href="{{ url_for('relatorio_insumos_csv') }}"
+        >
+            Exportar CSV
+        </a>
+    </div>
 
-            <div class="tabela-responsiva">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Unidade</th>
-                            <th>Tipo</th>
-                            <th>Endereço</th>
-                            <th>Equipamentos</th>
-                            <th>Insumos</th>
-                        </tr>
-                    </thead>
+    <div class="tabela-responsiva">
+        <table>
+            <thead>
+                <tr>
+                    <th>Unidade / Local</th>
+                    <th>Modelo</th>
+                    <th>Marca</th>
+                    <th>Lote / Série</th>
+                    <th>Quantidade</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Localização</th>
+                </tr>
+            </thead>
 
-                    <tbody>
-                        {% for unidade in relatorio_unidades %}
-                        <tr>
-                            <td>{{ unidade["codigo"] }}</td>
-                            <td>{{ unidade["nome"] }}</td>
-                            <td>{{ unidade["tipo"] or "-" }}</td>
-                            <td>{{ unidade["endereco"] or "-" }}</td>
-                            <td>{{ unidade["total_equipamentos"] }}</td>
-                            <td>{{ unidade["total_insumos"] }}</td>
-                        </tr>
+            <tbody>
+                {% for insumo in relatorio_insumos %}
+                <tr>
+                    <td>{{ insumo["nome_unidade"] }}</td>
+                    <td><strong>{{ insumo["modelo"] }}</strong></td>
+                    <td>{{ insumo["marca"] }}</td>
+                    <td>{{ insumo["numero_serie"] or "-" }}</td>
+                    <td>{{ insumo["quantidade"] }}</td>
+                    <td>{{ insumo["vencimento"] or "-" }}</td>
+                    <td>
+                        {% if insumo["status_vencimento"] == "Vencido" %}
+                            <span class="status status--vencido">
+                                Vencido
+                            </span>
+                        {% elif insumo["status_vencimento"] == "Próximo do vencimento" %}
+                            <span class="status status--proximo">
+                                Próximo do vencimento
+                            </span>
+                        {% elif insumo["status_vencimento"] == "Válido" %}
+                            <span class="status status--valido">
+                                Válido
+                            </span>
                         {% else %}
-                        <tr>
-                            <td colspan="6" class="sem-registros">
-                                Nenhuma unidade cadastrada.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="painel-relatorio">
-            <div class="cabecalho-relatorio">
-                <div>
-                    <h3>Relatório de Equipamentos</h3>
-                    <p>Equipamentos clínicos vinculados às unidades de saúde.</p>
-                </div>
-
-                <a
-                    class="botao botao-secundario"
-                    href="{{ url_for('relatorio_equipamentos_csv') }}"
-                >
-                    Exportar CSV
-                </a>
-            </div>
-
-            <div class="tabela-responsiva">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Unidade</th>
-                            <th>Patrimônio</th>
-                            <th>Equipamento</th>
-                            <th>Marca</th>
-                            <th>Modelo</th>
-                            <th>Nº de série</th>
-                            <th>Entrada</th>
-                            <th>Situação</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for equipamento in relatorio_equipamentos %}
-                        <tr>
-                            <td>{{ equipamento["nome_unidade"] }}</td>
-                            <td>{{ equipamento["patrimonio"] }}</td>
-                            <td>{{ equipamento["nome"] }}</td>
-                            <td>{{ equipamento["marca"] or "-" }}</td>
-                            <td>{{ equipamento["modelo"] or "-" }}</td>
-                            <td>{{ equipamento["numero_serie"] or "-" }}</td>
-                            <td>{{ equipamento["data_entrada"] or "-" }}</td>
-                            <td>{{ equipamento["situacao"] }}</td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="8" class="sem-registros">
-                                Nenhum equipamento cadastrado.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="painel-relatorio">
-            <div class="cabecalho-relatorio">
-                <div>
-                    <h3>Relatório de Insumos</h3>
-                    <p>Insumos do almoxarifado central e das unidades cadastradas.</p>
-                </div>
-
-                <a
-                    class="botao botao-secundario"
-                    href="{{ url_for('relatorio_insumos_csv') }}"
-                >
-                    Exportar CSV
-                </a>
-            </div>
-
-            <div class="tabela-responsiva">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Unidade / Local</th>
-                            <th>Modelo</th>
-                            <th>Marca</th>
-                            <th>Lote / Série</th>
-                            <th>Quantidade</th>
-                            <th>Vencimento</th>
-                            <th>Status</th>
-                            <th>Localização</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for insumo in relatorio_insumos %}
-                        <tr>
-                            <td>{{ insumo["nome_unidade"] }}</td>
-                            <td>{{ insumo["modelo"] }}</td>
-                            <td>{{ insumo["marca"] }}</td>
-                            <td>{{ insumo["numero_serie"] or "-" }}</td>
-                            <td>{{ insumo["quantidade"] }}</td>
-                            <td>{{ insumo["vencimento"] or "-" }}</td>
-                            <td>
-                                {% if insumo["status_vencimento"] == "Vencido" %}
-                                    <span class="status status-vencido">
-                                        Vencido
-                                    </span>
-                                {% elif insumo["status_vencimento"] == "Próximo do vencimento" %}
-                                    <span class="status status-proximo">
-                                        Próximo do vencimento
-                                    </span>
-                                {% elif insumo["status_vencimento"] == "Válido" %}
-                                    <span class="status status-valido">
-                                        Válido
-                                    </span>
-                                {% else %}
-                                    <span class="status status-sem-vencimento">
-                                        Sem vencimento
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td>{{ insumo["localizacao"] or "-" }}</td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="8" class="sem-registros">
-                                Nenhum insumo cadastrado.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-</body>
-</html>
+                            <span class="status status--sem-vencimento">
+                                Sem vencimento
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>{{ insumo["localizacao"] or "-" }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="sem-registros">
+                        Nenhum insumo cadastrado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -470,3 +470,218 @@ td {
         flex-direction: column;
     }
 }
+
+/* Cards de resumo dos relatórios */
+.cards-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+}
+
+.card-resumo {
+    background: #ffffff;
+    border-left: 5px solid #173557;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 18px;
+    text-align: center;
+}
+
+.card-resumo .rotulo {
+    color: #5a6470;
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-resumo strong {
+    color: #173557;
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.card-resumo.alerta {
+    border-left-color: #c0392b;
+}
+
+.card-resumo.alerta strong {
+    color: #c0392b;
+}
+
+.card-resumo.aviso {
+    border-left-color: #e67e22;
+}
+
+.card-resumo.aviso strong {
+    color: #e67e22;
+}
+
+/* Painel de relatório */
+.painel-relatorio {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 28px;
+    padding: 20px;
+}
+
+.cabecalho-relatorio {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cabecalho-relatorio h3 {
+    color: #173557;
+    margin: 0 0 5px;
+    font-size: 1.2rem;
+}
+
+.cabecalho-relatorio p {
+    color: #5a6470;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Botões nos relatórios */
+.botao--secundario {
+    background: #173557;
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 10px 14px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.botao--secundario:hover {
+    background: #0f2945;
+}
+
+/* Tabelas */
+.tabela-responsiva {
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+    min-width: 760px;
+    width: 100%;
+}
+
+th,
+td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 11px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #f1f5f9;
+    color: #173557;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+td {
+    font-size: 0.9rem;
+}
+
+tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+tbody tr:hover {
+    background: #f3f4f6;
+}
+
+.sem-registros {
+    color: #6b7280;
+    padding: 22px;
+    text-align: center;
+}
+
+/* Status de vencimento */
+.status {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 9px;
+    white-space: nowrap;
+}
+
+.status--vencido {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status--proximo {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.status--valido {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status--sem-vencimento {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+/* Badges de situação dos equipamentos */
+.badge {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 9px;
+    white-space: nowrap;
+}
+
+.badge--em-uso {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge--manutencao {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.badge--quebrado {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge--sucata {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.badge--reserva {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* Responsividade */
+@media (max-width: 700px) {
+    .cabecalho-relatorio {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cards-resumo {
+        grid-template-columns: 1fr;
+    }
+}
