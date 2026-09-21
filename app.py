@@ -851,6 +851,136 @@ def insumos():
         filtro_vencimento=filtro_vencimento,
     )
 
+@app.route("/insumos/<int:id_insumo>/editar", methods=["GET", "POST"])
+@login_required
+def editar_insumo(id_insumo):
+    """Edita um insumo cadastrado."""
+
+    with get_db_connection() as conn:
+        insumo = conn.execute(
+            """
+            SELECT *
+            FROM insumos
+            WHERE id_insumo = ?
+            """,
+            (id_insumo,),
+        ).fetchone()
+
+        lista_unidades = conn.execute(
+            """
+            SELECT id_unidade, codigo, nome
+            FROM unidades
+            ORDER BY nome
+            """
+        ).fetchall()
+
+    if insumo is None:
+        flash("Insumo não encontrado.", "erro")
+        return redirect(url_for("insumos"))
+
+    if request.method == "POST":
+        id_unidade_texto = request.form.get("id_unidade", "").strip()
+
+        if id_unidade_texto:
+            try:
+                id_unidade = int(id_unidade_texto)
+            except ValueError:
+                id_unidade = None
+        else:
+            # Vazio representa o Almoxarifado Central.
+            id_unidade = None
+
+        modelo = request.form.get("modelo", "").strip()
+        marca = request.form.get("marca", "").strip()
+        numero_serie = request.form.get("numero_serie", "").strip()
+        quantidade_texto = request.form.get("quantidade", "0").strip()
+
+        try:
+            quantidade = int(quantidade_texto)
+        except ValueError:
+            quantidade = -1
+
+        data_entrega = request.form.get("data_entrega", "").strip() or None
+        data_fabricacao = request.form.get(
+            "data_fabricacao",
+            "",
+        ).strip() or None
+        vencimento = request.form.get("vencimento", "").strip() or None
+        localizacao = request.form.get("localizacao", "").strip()
+        observacao = request.form.get("observacao", "").strip()
+
+        if not modelo or not marca:
+            flash("Modelo e marca são obrigatórios.", "erro")
+
+        elif quantidade < 0:
+            flash(
+                "A quantidade deve ser um número inteiro igual ou maior que zero.",
+                "erro",
+            )
+
+        else:
+            try:
+                with get_db_connection() as conn:
+                    conn.execute(
+                        """
+                        UPDATE insumos
+                        SET
+                            id_unidade = ?,
+                            modelo = ?,
+                            marca = ?,
+                            numero_serie = ?,
+                            quantidade = ?,
+                            data_entrega = ?,
+                            data_fabricacao = ?,
+                            vencimento = ?,
+                            localizacao = ?,
+                            observacao = ?
+                        WHERE id_insumo = ?
+                        """,
+                        (
+                            id_unidade,
+                            modelo,
+                            marca,
+                            numero_serie,
+                            quantidade,
+                            data_entrega,
+                            data_fabricacao,
+                            vencimento,
+                            localizacao,
+                            observacao,
+                            id_insumo,
+                        ),
+                    )
+
+                flash("Insumo atualizado com sucesso!", "sucesso")
+                return redirect(url_for("insumos"))
+
+            except sqlite3.Error as erro_banco:
+                flash(
+                    f"Erro ao atualizar insumo: {erro_banco}",
+                    "erro",
+                )
+
+        # Mantém os dados digitados caso haja erro de validação.
+        insumo = {
+            "id_insumo": id_insumo,
+            "id_unidade": id_unidade,
+            "modelo": modelo,
+            "marca": marca,
+            "numero_serie": numero_serie,
+            "quantidade": quantidade_texto,
+            "data_entrega": data_entrega,
+            "data_fabricacao": data_fabricacao,
+            "vencimento": vencimento,
+            "localizacao": localizacao,
+            "observacao": observacao,
+        }
+
+    return render_template(
+        "editar_insumo.html",
+        insumo=insumo,
+        unidades=lista_unidades,
+    )
 
 # =========================================================
 # EXECUÇÃO LOCAL
@@ -1188,6 +1318,7 @@ def relatorio_insumos_csv():
         linhas,
     )
 
+    
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
