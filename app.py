@@ -6,13 +6,16 @@ Stack: Flask + SQLite + HTML/CSS/JS
 
 import os
 import sqlite3
+import csv
 
-from datetime import timedelta
+from io import StringIO
+from datetime import timedelta, datetime
 from functools import wraps
 from pathlib import Path
 
 from flask import (
     Flask,
+    Response,
     flash,
     redirect,
     render_template,
@@ -147,6 +150,58 @@ def init_db():
         with open(SCHEMA, "r", encoding="utf-8") as arquivo:
             conn.executescript(arquivo.read())
 
+def gerar_csv(nome_arquivo, cabecalhos, linhas):
+    """
+    Gera um arquivo CSV para download.
+    Usa ; como separador, compatível com Excel em português.
+    """
+
+    arquivo = StringIO()
+    writer = csv.writer(arquivo, delimiter=";")
+
+    writer.writerow(cabecalhos)
+
+    for linha in linhas:
+        writer.writerow(linha)
+
+    resposta = Response(
+        arquivo.getvalue(),
+        mimetype="text/csv; charset=utf-8"
+    )
+
+    resposta.headers["Content-Disposition"] = (
+        f'attachment; filename="{nome_arquivo}"'
+    )
+
+    return resposta
+
+
+def status_vencimento(vencimento):
+    """Retorna o status do vencimento para exibição no relatório."""
+
+    if not vencimento:
+        return "Sem data de vencimento"
+
+    try:
+        data_vencimento = datetime.strptime(
+            vencimento,
+            "%Y-%m-%d"
+        ).date()
+
+        hoje = datetime.now().date()
+        dias_restantes = (data_vencimento - hoje).days
+
+        if dias_restantes < 0:
+            return "Vencido"
+
+        if dias_restantes <= 30:
+            return "Próximo do vencimento"
+
+        return "Válido"
+
+    except ValueError:
+        return "Data inválida"
+
 
 # =========================================================
 # PÁGINA INICIAL
@@ -175,7 +230,7 @@ def index():
             SELECT COUNT(*) AS total
             FROM insumos
             WHERE vencimento IS NOT NULL
-              AND date(vencimento) < date('now')
+            AND date(vencimento) < date('now')
             """
         ).fetchone()["total"]
 
@@ -184,8 +239,8 @@ def index():
             SELECT COUNT(*) AS total
             FROM insumos
             WHERE vencimento IS NOT NULL
-              AND date(vencimento) >= date('now')
-              AND date(vencimento) <= date('now', '+30 days')
+            AND date(vencimento) >= date('now')
+            AND date(vencimento) <= date('now', '+30 days')
             """
         ).fetchone()["total"]
 
@@ -246,8 +301,8 @@ def unidades():
                 SELECT *
                 FROM unidades
                 WHERE codigo LIKE ?
-                   OR nome LIKE ?
-                   OR tipo LIKE ?
+                OR nome LIKE ?
+                OR tipo LIKE ?
                 ORDER BY nome
                 """,
                 (
@@ -625,6 +680,338 @@ def insumos():
 # =========================================================
 # EXECUÇÃO LOCAL
 # =========================================================
+
+@app.route("/relatorios")
+@login_required
+def relatorios():
+    """Exibe os relatórios gerais do sistema."""
+
+    with get_db_connection() as conn:
+        relatorio_unidades = conn.execute(
+            """
+            SELECT
+                u.id_unidade,
+                u.codigo,
+                u.nome,
+                u.tipo,
+                u.endereco,
+                COUNT(DISTINCT e.id_equipamento) AS total_equipamentos,
+                COUNT(DISTINCT i.id_insumo) AS total_insumos
+            FROM unidades u
+            LEFT JOIN equipamentos e
+                ON e.id_unidade = u.id_unidade
+            LEFT JOIN insumos i
+                ON i.id_unidade = u.id_unidade
+            GROUP BY
+                u.id_unidade,
+                u.codigo,
+                u.nome,
+                u.tipo,
+                u.endereco
+            ORDER BY u.nome
+            """
+        ).fetchall()
+
+        relatorio_equipamentos = conn.execute(
+            """
+            SELECT
+                e.id_equipamento,
+                u.codigo AS codigo_unidade,
+                u.nome AS nome_unidade,
+                e.patrimonio,
+                e.nome,
+                e.modelo,
+                e.marca,
+                e.numero_serie,
+                e.data_entrada,
+                e.situacao,
+                e.observacao
+            FROM equipamentos e
+            JOIN unidades u
+                ON e.id_unidade = u.id_unidade
+            ORDER BY
+                u.nome,
+                e.nome,
+                e.patrimonio
+            """
+        ).fetchall()
+
+        relatorio_insumos = conn.execute(
+            """
+            SELECT
+                i.id_insumo,
+                COALESCE(u.codigo, 'ALMOXARIFADO') AS codigo_unidade,
+                COALESCE(u.nome, 'Almoxarifado Central') AS nome_unidade,
+                i.modelo,
+                i.marca,
+                i.numero_serie,
+                i.quantidade,
+                i.data_entrega,
+                i.data_fabricacao,
+                i.vencimento,
+                i.localizacao,
+                i.observacao,
+                CASE
+                    WHEN i.vencimento IS NULL OR i.vencimento = ''
+                        THEN 'Sem data de vencimento'
+                    WHEN date(i.vencimento) < date('now')
+                        THEN 'Vencido'
+                    WHEN date(i.vencimento) <= date('now', '+30 days')
+                        THEN 'Próximo do vencimento'
+                    ELSE 'Válido'
+                END AS status_vencimento
+            FROM insumos i
+            LEFT JOIN unidades u
+                ON i.id_unidade = u.id_unidade
+            ORDER BY
+                CASE
+                    WHEN i.vencimento IS NULL OR i.vencimento = ''
+                        THEN 2
+                    ELSE 1
+                END,
+                date(i.vencimento),
+                i.modelo,
+                i.marca
+            """
+        ).fetchall()
+
+        resumo = conn.execute(
+            """
+            SELECT
+                (SELECT COUNT(*) FROM unidades) AS total_unidades,
+                (SELECT COUNT(*) FROM equipamentos) AS total_equipamentos,
+                (SELECT COUNT(*) FROM insumos) AS total_insumos,
+                (
+                    SELECT COUNT(*)
+                    FROM insumos
+                    WHERE vencimento IS NOT NULL
+                    AND vencimento <> ''
+                    AND date(vencimento) < date('now')
+                ) AS total_vencidos,
+                (
+                    SELECT COUNT(*)
+                    FROM insumos
+                    WHERE vencimento IS NOT NULL
+                    AND vencimento <> ''
+                    AND date(vencimento) >= date('now')
+                    AND date(vencimento) <= date('now', '+30 days')
+                ) AS total_proximos_vencimento
+            """
+        ).fetchone()
+
+    return render_template(
+        "relatorios.html",
+        resumo=resumo,
+        relatorio_unidades=relatorio_unidades,
+        relatorio_equipamentos=relatorio_equipamentos,
+        relatorio_insumos=relatorio_insumos,
+    )
+
+@app.route("/relatorios/unidades/csv")
+@login_required
+def relatorio_unidades_csv():
+    """Exporta o relatório de unidades em CSV."""
+
+    with get_db_connection() as conn:
+        unidades = conn.execute(
+            """
+            SELECT
+                u.codigo,
+                u.nome,
+                u.tipo,
+                u.endereco,
+                COUNT(DISTINCT e.id_equipamento) AS total_equipamentos,
+                COUNT(DISTINCT i.id_insumo) AS total_insumos
+            FROM unidades u
+            LEFT JOIN equipamentos e
+                ON e.id_unidade = u.id_unidade
+            LEFT JOIN insumos i
+                ON i.id_unidade = u.id_unidade
+            GROUP BY
+                u.id_unidade,
+                u.codigo,
+                u.nome,
+                u.tipo,
+                u.endereco
+            ORDER BY u.nome
+            """
+        ).fetchall()
+
+    cabecalhos = [
+        "Código",
+        "Nome da unidade",
+        "Tipo",
+        "Endereço",
+        "Total de equipamentos",
+        "Total de insumos",
+    ]
+
+    linhas = [
+        [
+            unidade["codigo"],
+            unidade["nome"],
+            unidade["tipo"],
+            unidade["endereco"],
+            unidade["total_equipamentos"],
+            unidade["total_insumos"],
+        ]
+        for unidade in unidades
+    ]
+
+    return gerar_csv(
+        "relatorio_unidades.csv",
+        cabecalhos,
+        linhas,
+    )
+
+
+@app.route("/relatorios/equipamentos/csv")
+@login_required
+def relatorio_equipamentos_csv():
+    """Exporta o relatório de equipamentos em CSV."""
+
+    with get_db_connection() as conn:
+        equipamentos = conn.execute(
+            """
+            SELECT
+                u.codigo AS codigo_unidade,
+                u.nome AS nome_unidade,
+                e.patrimonio,
+                e.nome,
+                e.modelo,
+                e.marca,
+                e.numero_serie,
+                e.data_entrada,
+                e.situacao,
+                e.observacao
+            FROM equipamentos e
+            JOIN unidades u
+                ON e.id_unidade = u.id_unidade
+            ORDER BY
+                u.nome,
+                e.nome,
+                e.patrimonio
+            """
+        ).fetchall()
+
+    cabecalhos = [
+        "Código da unidade",
+        "Unidade",
+        "Patrimônio",
+        "Equipamento",
+        "Modelo",
+        "Marca",
+        "Número de série",
+        "Data de entrada",
+        "Situação",
+        "Observação",
+    ]
+
+    linhas = [
+        [
+            equipamento["codigo_unidade"],
+            equipamento["nome_unidade"],
+            equipamento["patrimonio"],
+            equipamento["nome"],
+            equipamento["modelo"],
+            equipamento["marca"],
+            equipamento["numero_serie"],
+            equipamento["data_entrada"],
+            equipamento["situacao"],
+            equipamento["observacao"],
+        ]
+        for equipamento in equipamentos
+    ]
+
+    return gerar_csv(
+        "relatorio_equipamentos.csv",
+        cabecalhos,
+        linhas,
+    )
+
+
+@app.route("/relatorios/insumos/csv")
+@login_required
+def relatorio_insumos_csv():
+    """Exporta o relatório de insumos em CSV."""
+
+    with get_db_connection() as conn:
+        insumos = conn.execute(
+            """
+            SELECT
+                COALESCE(u.codigo, 'ALMOXARIFADO') AS codigo_unidade,
+                COALESCE(u.nome, 'Almoxarifado Central') AS nome_unidade,
+                i.modelo,
+                i.marca,
+                i.numero_serie,
+                i.quantidade,
+                i.data_entrega,
+                i.data_fabricacao,
+                i.vencimento,
+                i.localizacao,
+                i.observacao,
+                CASE
+                    WHEN i.vencimento IS NULL OR i.vencimento = ''
+                        THEN 'Sem data de vencimento'
+                    WHEN date(i.vencimento) < date('now')
+                        THEN 'Vencido'
+                    WHEN date(i.vencimento) <= date('now', '+30 days')
+                        THEN 'Próximo do vencimento'
+                    ELSE 'Válido'
+                END AS status_vencimento
+            FROM insumos i
+            LEFT JOIN unidades u
+                ON i.id_unidade = u.id_unidade
+            ORDER BY
+                CASE
+                    WHEN i.vencimento IS NULL OR i.vencimento = ''
+                        THEN 2
+                    ELSE 1
+                END,
+                date(i.vencimento),
+                i.modelo,
+                i.marca
+            """
+        ).fetchall()
+
+    cabecalhos = [
+        "Código da unidade",
+        "Unidade ou local",
+        "Modelo",
+        "Marca",
+        "Lote / número de série",
+        "Quantidade",
+        "Data de entrega",
+        "Data de fabricação",
+        "Data de vencimento",
+        "Localização",
+        "Status de vencimento",
+        "Observação",
+    ]
+
+    linhas = [
+        [
+            insumo["codigo_unidade"],
+            insumo["nome_unidade"],
+            insumo["modelo"],
+            insumo["marca"],
+            insumo["numero_serie"],
+            insumo["quantidade"],
+            insumo["data_entrega"],
+            insumo["data_fabricacao"],
+            insumo["vencimento"],
+            insumo["localizacao"],
+            insumo["status_vencimento"],
+            insumo["observacao"],
+        ]
+        for insumo in insumos
+    ]
+
+    return gerar_csv(
+        "relatorio_insumos.csv",
+        cabecalhos,
+        linhas,
+    )
 
 if __name__ == "__main__":
     init_db()

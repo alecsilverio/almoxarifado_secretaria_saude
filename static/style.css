@@ -314,3 +314,159 @@ body {
     align-items: center;
     gap: 12px;
 }
+
+.cards-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+}
+
+.card-resumo {
+    background: #ffffff;
+    border-left: 5px solid #173557;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 18px;
+}
+
+.card-resumo .rotulo {
+    color: #5a6470;
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.card-resumo strong {
+    color: #173557;
+    font-size: 2rem;
+}
+
+.card-resumo.alerta {
+    border-left-color: #c0392b;
+}
+
+.card-resumo.alerta strong {
+    color: #c0392b;
+}
+
+.card-resumo.aviso {
+    border-left-color: #e67e22;
+}
+
+.card-resumo.aviso strong {
+    color: #e67e22;
+}
+
+.painel-relatorio {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 28px;
+    padding: 20px;
+}
+
+.cabecalho-relatorio {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cabecalho-relatorio h3 {
+    color: #173557;
+    margin: 0 0 5px;
+}
+
+.cabecalho-relatorio p {
+    color: #5a6470;
+    margin: 0;
+}
+
+.botao {
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: 600;
+    padding: 10px 14px;
+    text-decoration: none;
+}
+
+.botao-secundario {
+    background: #173557;
+    color: #ffffff;
+}
+
+.botao-secundario:hover {
+    background: #0f2945;
+}
+
+.tabela-responsiva {
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+    min-width: 760px;
+    width: 100%;
+}
+
+th,
+td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 11px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #f1f5f9;
+    color: #173557;
+    font-size: 0.88rem;
+}
+
+td {
+    font-size: 0.9rem;
+}
+
+.sem-registros {
+    color: #6b7280;
+    padding: 22px;
+    text-align: center;
+}
+
+.status {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 5px 9px;
+    white-space: nowrap;
+}
+
+.status-vencido {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-proximo {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.status-valido {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-sem-vencimento {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+@media (max-width: 700px) {
+    .cabecalho-relatorio {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
