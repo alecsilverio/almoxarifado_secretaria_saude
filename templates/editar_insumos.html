@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Insumo | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">EDIÇÃO</p>
+        <h2>Editar insumo</h2>
+        <p>Atualize as informações do insumo ou material cadastrado.</p>
+    </div>
+</section>
+
+<section class="painel painel--formulario">
+    <form method="post" class="formulario">
+        <div class="campo">
+            <label for="id_unidade">Localização</label>
+            <select id="id_unidade" name="id_unidade">
+                <option value="" {% if not insumo['id_unidade'] %}selected{% endif %}>
+                    Almoxarifado Central
+                </option>
+
+                {% for unidade in unidades %}
+                    <option
+                        value="{{ unidade['id_unidade'] }}"
+                        {% if unidade['id_unidade'] == insumo['id_unidade'] %}selected{% endif %}
+                    >
+                        {{ unidade['codigo'] }} - {{ unidade['nome'] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <small>Deixe como Almoxarifado Central caso o item não esteja vinculado a uma unidade.</small>
+        </div>
+
+        <div class="campo">
+            <label for="modelo">Modelo *</label>
+            <input
+                type="text"
+                id="modelo"
+                name="modelo"
+                value="{{ insumo['modelo'] }}"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="marca">Marca *</label>
+            <input
+                type="text"
+                id="marca"
+                name="marca"
+                value="{{ insumo['marca'] }}"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="numero_serie">Número de série / Lote</label>
+            <input
+                type="text"
+                id="numero_serie"
+                name="numero_serie"
+                value="{{ insumo['numero_serie'] or '' }}"
+            >
+        </div>
+
+        <div class="campo">
+            <label for="quantidade">Quantidade *</label>
+            <input
+                type="number"
+                id="quantidade"
+                name="quantidade"
+                value="{{ insumo['quantidade'] }}"
+                min="0"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="data_entrega">Data de entrega</label>
+            <input
+                type="date"
+                id="data_entrega"
+                name="data_entrega"
+                value="{{ insumo['data_entrega'] or '' }}"
+            >
+        </div>
+
+        <div class="campo">
+            <label for="data_fabricacao">Data de fabricação</label>
+            <input
+                type="date"
+                id="data_fabricacao"
+                name="data_fabricacao"
+                value="{{ insumo['data_fabricacao'] or '' }}"
+            >
+        </div>
+
+        <div class="campo">
+            <label for="vencimento">Vencimento</label>
+            <input
+                type="date"
+                id="vencimento"
+                name="vencimento"
+                value="{{ insumo['vencimento'] or '' }}"
+            >
+        </div>
+
+        <div class="campo">
+            <label for="localizacao">Localização física</label>
+            <input
+                type="text"
+                id="localizacao"
+                name="localizacao"
+                value="{{ insumo['localizacao'] or '' }}"
+                placeholder="Ex.: Rua A, Prateleira 3"
+            >
+        </div>
+
+        <div class="campo">
+            <label for="observacao">Observação</label>
+            <textarea
+                id="observacao"
+                name="observacao"
+                rows="4"
+            >{{ insumo['observacao'] or '' }}</textarea>
+        </div>
+
+        <div class="acoes-formulario">
+            <a class="botao botao--cancelar" href="{{ url_for('insumos') }}">
+                Cancelar
+            </a>
+
+            <button class="botao botao--primario" type="submit">
+                Salvar alterações
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}

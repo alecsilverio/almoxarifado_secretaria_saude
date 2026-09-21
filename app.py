@@ -322,6 +322,74 @@ def unidades():
         busca=termo_busca,
     )
 
+@app.route("/unidades/<int:id_unidade>/editar", methods=["GET", "POST"])
+@login_required
+def editar_unidade(id_unidade):
+    """Edita uma unidade cadastrada."""
+
+    with get_db_connection() as conn:
+        unidade = conn.execute(
+            """
+            SELECT *
+            FROM unidades
+            WHERE id_unidade = ?
+            """,
+            (id_unidade,),
+        ).fetchone()
+
+    if unidade is None:
+        flash("Unidade não encontrada.", "erro")
+        return redirect(url_for("unidades"))
+
+    if request.method == "POST":
+        codigo = request.form.get("codigo", "").strip().upper()
+        nome = request.form.get("nome", "").strip()
+        tipo = request.form.get("tipo", "").strip()
+        endereco = request.form.get("endereco", "").strip()
+
+        if not codigo or not nome:
+            flash("Código e nome da unidade são obrigatórios.", "erro")
+        else:
+            try:
+                with get_db_connection() as conn:
+                    conn.execute(
+                        """
+                        UPDATE unidades
+                        SET
+                            codigo = ?,
+                            nome = ?,
+                            tipo = ?,
+                            endereco = ?
+                        WHERE id_unidade = ?
+                        """,
+                        (
+                            codigo,
+                            nome,
+                            tipo,
+                            endereco,
+                            id_unidade,
+                        ),
+                    )
+
+                flash("Unidade atualizada com sucesso!", "sucesso")
+                return redirect(url_for("unidades"))
+
+            except sqlite3.IntegrityError:
+                flash(
+                    "Já existe outra unidade cadastrada com este código.",
+                    "erro",
+                )
+
+        # Mantém os dados digitados caso a validação falhe.
+        unidade = {
+            "id_unidade": id_unidade,
+            "codigo": codigo,
+            "nome": nome,
+            "tipo": tipo,
+            "endereco": endereco,
+        }
+
+    return render_template("editar_unidade.html", unidade=unidade)
 
 # =========================================================
 # EQUIPAMENTOS
@@ -462,6 +530,113 @@ def equipamentos():
         filtro_situacao=filtro_situacao,
     )
 
+@app.route("/equipamentos/<int:id_equipamento>/editar", methods=["GET", "POST"])
+@login_required
+def editar_equipamento(id_equipamento):
+    """Edita um equipamento cadastrado."""
+
+    with get_db_connection() as conn:
+        equipamento = conn.execute(
+            """
+            SELECT *
+            FROM equipamentos
+            WHERE id_equipamento = ?
+            """,
+            (id_equipamento,),
+        ).fetchone()
+
+        lista_unidades = conn.execute(
+            """
+            SELECT id_unidade, codigo, nome
+            FROM unidades
+            ORDER BY nome
+            """
+        ).fetchall()
+
+    if equipamento is None:
+        flash("Equipamento não encontrado.", "erro")
+        return redirect(url_for("equipamentos"))
+
+    if request.method == "POST":
+        id_unidade_texto = request.form.get("id_unidade", "").strip()
+        patrimonio = request.form.get("patrimonio", "").strip().upper()
+        nome = request.form.get("nome", "").strip()
+        modelo = request.form.get("modelo", "").strip()
+        marca = request.form.get("marca", "").strip()
+        numero_serie = request.form.get("numero_serie", "").strip()
+        data_entrada = request.form.get("data_entrada", "").strip() or None
+        situacao = request.form.get("situacao", "").strip()
+        observacao = request.form.get("observacao", "").strip()
+
+        try:
+            id_unidade = int(id_unidade_texto)
+        except ValueError:
+            id_unidade = None
+
+        if not id_unidade or not patrimonio or not nome or not situacao:
+            flash(
+                "Unidade, patrimônio, nome e situação são obrigatórios.",
+                "erro",
+            )
+        else:
+            try:
+                with get_db_connection() as conn:
+                    conn.execute(
+                        """
+                        UPDATE equipamentos
+                        SET
+                            id_unidade = ?,
+                            patrimonio = ?,
+                            nome = ?,
+                            modelo = ?,
+                            marca = ?,
+                            numero_serie = ?,
+                            data_entrada = ?,
+                            situacao = ?,
+                            observacao = ?
+                        WHERE id_equipamento = ?
+                        """,
+                        (
+                            id_unidade,
+                            patrimonio,
+                            nome,
+                            modelo,
+                            marca,
+                            numero_serie,
+                            data_entrada,
+                            situacao,
+                            observacao,
+                            id_equipamento,
+                        ),
+                    )
+
+                flash("Equipamento atualizado com sucesso!", "sucesso")
+                return redirect(url_for("equipamentos"))
+
+            except sqlite3.IntegrityError:
+                flash(
+                    "Já existe outro equipamento com este patrimônio nesta unidade.",
+                    "erro",
+                )
+
+        equipamento = {
+            "id_equipamento": id_equipamento,
+            "id_unidade": id_unidade,
+            "patrimonio": patrimonio,
+            "nome": nome,
+            "modelo": modelo,
+            "marca": marca,
+            "numero_serie": numero_serie,
+            "data_entrada": data_entrada,
+            "situacao": situacao,
+            "observacao": observacao,
+        }
+
+    return render_template(
+        "editar_equipamento.html",
+        equipamento=equipamento,
+        unidades=lista_unidades,
+    )
 
 # =========================================================
 # INSUMOS

@@ -44,15 +44,15 @@
                 <select id="tipo" name="tipo">
                     <option value="">Selecione</option>
                     <option value="UBS">UBS</option>
-                    <option value="ESF">USF</option>
+                    <option value="USF">USF</option>
                     <option value="CAPS">CAPS</option>
                     <option value="Hospital">Hospital</option>
-                    <option value="Hospital">SAD</option>
-                    <option value="Hospital">IST</option>
-                    <option value="Hospital">Estabelecimento Penal Feminino</option>
-                    <option value="Hospital">Ambulatório de Saúde Mental</option>
-                    <option value="Hospital">Penitenciária de Segurança Média</option>
-                    <option value="Hospital">Colonia Penal</option>
+                    <option value="SAD">SAD</option>
+                    <option value="IST">IST</option>
+                    <option value="Estabelecimento Penal Feminino"> Estabelecimento Penal Feminino</option>
+                    <option value="Ambulatório de Saúde Mental">Ambulatório de Saúde Mental</option>
+                    <option value="Penitenciária de Segurança Média">Penitenciária de Segurança Média</option>
+                    <option value="Colônia Penal">Colônia Penal</option>
                     <option value="UPA">UPA</option>
                     <option value="SAMU">SAMU</option>
                     <option value="Secretaria">Secretaria</option>
@@ -91,6 +91,7 @@
                             <th>Unidade</th>
                             <th>Tipo</th>
                             <th>Endereço</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,6 +101,14 @@
                                 <td>{{ unidade['nome'] }}</td>
                                 <td>{{ unidade['tipo'] or '-' }}</td>
                                 <td>{{ unidade['endereco'] or '-' }}</td>
+                                <td>
+                                    <a
+                                        class="botao botao--editar"
+                                        href="{{ url_for('editar_unidade', id_unidade=unidade['id_unidade']) }}"
+                                        >
+                                        Editar
+                                        </a>
+                                </td>   
                             </tr>
                         {% endfor %}
                     </tbody>

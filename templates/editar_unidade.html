@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Unidade | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">EDIÇÃO</p>
+        <h2>Editar unidade</h2>
+        <p>Atualize as informações da unidade cadastrada.</p>
+    </div>
+</section>
+
+<section class="painel painel--formulario">
+    <form method="post" class="formulario">
+        <div class="campo">
+            <label for="codigo">Código da unidade *</label>
+            <input
+                type="text"
+                id="codigo"
+                name="codigo"
+                value="{{ unidade['codigo'] }}"
+                maxlength="20"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="nome">Nome da unidade *</label>
+            <input
+                type="text"
+                id="nome"
+                name="nome"
+                value="{{ unidade['nome'] }}"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="tipo">Tipo</label>
+            <select id="tipo" name="tipo">
+                <option value="">Selecione</option>
+
+                <option value="UBS" {% if unidade['tipo'] == 'UBS' %}selected{% endif %}>UBS</option>
+                <option value="USF" {% if unidade['tipo'] == 'USF' %}selected{% endif %}>USF</option>
+                <option value="CAPS" {% if unidade['tipo'] == 'CAPS' %}selected{% endif %}>CAPS</option>
+                <option value="UPA" {% if unidade['tipo'] == 'UPA' %}selected{% endif %}>UPA</option>
+                <option value="SAMU" {% if unidade['tipo'] == 'SAMU' %}selected{% endif %}>SAMU</option>
+                <option value="SAD" {% if unidade['tipo'] == 'SAD' %}selected{% endif %}>SAD</option>
+                <option value="IST" {% if unidade['tipo'] == 'IST' %}selected{% endif %}>IST</option>
+                <option value="Ambulatório de Saúde Mental" {% if unidade['tipo'] == 'Ambulatório de Saúde Mental' %}selected{% endif %}>
+                    Ambulatório de Saúde Mental
+                </option>
+                <option value="Estabelecimento Penal Feminino" {% if unidade['tipo'] == 'Estabelecimento Penal Feminino' %}selected{% endif %}>
+                    Estabelecimento Penal Feminino
+                </option>
+                <option value="Penitenciária de Segurança Média" {% if unidade['tipo'] == 'Penitenciária de Segurança Média' %}selected{% endif %}>
+                    Penitenciária de Segurança Média
+                </option>
+                <option value="Colônia Penal" {% if unidade['tipo'] == 'Colônia Penal' %}selected{% endif %}>
+                    Colônia Penal
+                </option>
+                <option value="Secretaria" {% if unidade['tipo'] == 'Secretaria' %}selected{% endif %}>Secretaria</option>
+                <option value="Outro" {% if unidade['tipo'] == 'Outro' %}selected{% endif %}>Outro</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="endereco">Endereço</label>
+            <input
+                type="text"
+                id="endereco"
+                name="endereco"
+                value="{{ unidade['endereco'] or '' }}"
+            >
+        </div>
+
+        <div class="acoes-formulario">
+            <a class="botao botao--cancelar" href="{{ url_for('unidades') }}">
+                Cancelar
+            </a>
+
+            <button class="botao botao--primario" type="submit">
+                Salvar alterações
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}

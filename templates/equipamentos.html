@@ -134,6 +134,7 @@
                             <th>Modelo</th>
                             <th>Marca</th>
                             <th>Situação</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,6 +150,14 @@
                                     {{ equipamento['situacao'] or '-' }}
                                 </span>
                             </td>
+                            <td>
+                                <a
+                                    class="botao botao--editar"
+                                    href="{{ url_for('editar_equipamento', id_equipamento=equipamento['id_equipamento']) }}"
+                                    >
+                                    Editar
+                                </a>
+</td>
                         </tr>
                         {% endfor %}
                     </tbody>

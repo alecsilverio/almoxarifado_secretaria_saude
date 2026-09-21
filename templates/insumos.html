@@ -143,6 +143,7 @@
                             <th>Qtd</th>
                             <th>Vencimento</th>
                             <th>Localização</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,6 +164,14 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ insumo['localizacao'] or '-' }}</td>
+                                <td>
+                                    <a
+                                        class="botao botao--editar"
+                                        href="{{ url_for('editar_insumo', id_insumo=insumo['id_insumo']) }}"
+                                        >
+                                        Editar
+                                    </a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
