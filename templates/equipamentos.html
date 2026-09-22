@@ -11,109 +11,116 @@
     </div>
 </section>
 
-<section class="grid-equipamentos">
-    <article class="painel">
-        <h3>Novo equipamento</h3>
+<section class="grid-insumos">
+    <article class="painel painel-form">
+        <div class="painel-form__cabecalho">
+            <h3>Novo equipamento</h3>
+            <p>Registre um equipamento clínico e vincule à unidade de saúde.</p>
+        </div>
 
-        <form method="post" class="formulario">
-            <div class="campo">
-                <label for="id_unidade">Unidade *</label>
-                <select id="id_unidade" name="id_unidade" required>
-                    <option value="">Selecione</option>
-                    {% for unidade in unidades %}
-                        <option value="{{ unidade['id_unidade'] }}">
-                            {{ unidade['codigo'] }} - {{ unidade['nome'] }}
-                        </option>
-                    {% endfor %}
-                </select>
+        <form method="post" class="form-moderno">
+            <div class="form-grid form-grid--2-colunas">
+                <div class="form-campo">
+                    <label for="id_unidade">Unidade</label>
+                    <select id="id_unidade" name="id_unidade" required>
+                        <option value="">Selecione</option>
+                        {% for unidade in unidades %}
+                            <option value="{{ unidade['id_unidade'] }}">
+                                {{ unidade['codigo'] }} - {{ unidade['nome'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-campo">
+                    <label for="patrimonio">Patrimônio</label>
+                    <input
+                        type="text"
+                        id="patrimonio"
+                        name="patrimonio"
+                        placeholder="Ex.: 123456"
+                        maxlength="30"
+                        required
+                    >
+                </div>
+
+                <div class="form-campo form-campo--full">
+                    <label for="nome">Nome do equipamento</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Ex.: Monitor Multiparâmetro"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="modelo">Modelo</label>
+                    <input
+                        type="text"
+                        id="modelo"
+                        name="modelo"
+                        placeholder="Ex.: MX500"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="marca">Marca</label>
+                    <input
+                        type="text"
+                        id="marca"
+                        name="marca"
+                        placeholder="Ex.: Philips"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="numero_serie">Número de série</label>
+                    <input
+                        type="text"
+                        id="numero_serie"
+                        name="numero_serie"
+                        placeholder="Ex.: ABC123456"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="data_entrada">Data de entrada</label>
+                    <input
+                        type="date"
+                        id="data_entrada"
+                        name="data_entrada"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="situacao">Situação</label>
+                    <select id="situacao" name="situacao">
+                        <option value="">Selecione</option>
+                        <option value="Em uso">Em uso</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Quebrado">Quebrado</option>
+                        <option value="Sucata">Sucata</option>
+                        <option value="Reserva">Reserva</option>
+                    </select>
+                </div>
+
+                <div class="form-campo form-campo--full">
+                    <label for="observacao">Observação</label>
+                    <textarea
+                        id="observacao"
+                        name="observacao"
+                        rows="3"
+                        placeholder="Detalhes adicionais"
+                    ></textarea>
+                </div>
             </div>
 
-            <div class="campo">
-                <label for="patrimonio">Patrimônio *</label>
-                <input
-                    type="text"
-                    id="patrimonio"
-                    name="patrimonio"
-                    placeholder="Ex.: 12345-6"
-                    maxlength="30"
-                    required
-                >
+            <div class="form-acoes">
+                <button class="botao botao--primario" type="submit">
+                    Cadastrar equipamento
+                </button>
             </div>
-
-            <div class="campo">
-                <label for="nome">Nome do equipamento</label>
-                <input
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    placeholder="Ex.: Monitor Multiparâmetro"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="modelo">Modelo</label>
-                <input
-                    type="text"
-                    id="modelo"
-                    name="modelo"
-                    placeholder="Ex.: MX500"
-                > 
-            </div>
-
-            <div class="campo">
-                <label for="marca">Marca</label>
-                <input
-                    type="text"
-                    id="marca"
-                    name="marca"
-                    placeholder="Ex.: Philips"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="numero_serie">Número de série</label>
-                <input
-                    type="text"
-                    id="numero_serie"
-                    name="numero_serie"
-                    placeholder="Ex.: ABC123456"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="data_entrada">Data de entrada</label>
-                <input
-                    type="date"
-                    id="data_entrada"
-                    name="data_entrada"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="situacao">Situação</label>
-                <select id="situacao" name="situacao">
-                    <option value="">Selecione</option>
-                    <option value="Em uso">Em uso</option>
-                    <option value="Manutenção">Manutenção</option>
-                    <option value="Quebrado">Quebrado</option>
-                    <option value="Sucata">Sucata</option>
-                    <option value="Reserva">Reserva</option>
-                </select>
-            </div>
-
-            <div class="campo">
-                <label for="observacao">Observação</label>
-                <textarea
-                    id="observacao"
-                    name="observacao"
-                    rows="3"
-                    placeholder="Detalhes adicionais"
-                ></textarea>
-            </div>
-
-            <button class="botao botao--primario" type="submit">
-                Cadastrar equipamento
-            </button>
         </form>
     </article>
 
@@ -134,6 +141,7 @@
                             <th>Modelo</th>
                             <th>Marca</th>
                             <th>Situação</th>
+                            <th>Observação</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -150,20 +158,22 @@
                                     {{ equipamento['situacao'] or '-' }}
                                 </span>
                             </td>
+                            <td>{{ equipamento['observacao'] or '-' }}</td>
                             <td>
                                 <a
                                     class="botao botao--editar"
                                     href="{{ url_for('editar_equipamento', id_equipamento=equipamento['id_equipamento']) }}"
-                                    >
+                                >
                                     Editar
                                 </a>
-</td>
+                            </td>
+                            
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% else %}
+        {% else %}
             <p class="estado-vazio">
                 Nenhum equipamento cadastrado. Use o formulário ao lado para iniciar.
             </p>

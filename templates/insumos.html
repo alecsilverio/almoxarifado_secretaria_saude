@@ -12,116 +12,123 @@
 </section>
 
 <section class="grid-insumos">
-    <article class="painel">
-        <h3>Novo insumo</h3>
+    <article class="painel painel-form">
+        <div class="painel-form__cabecalho">
+            <h3>Novo insumo</h3>
+            <p>Cadastre insumos do almoxarifado central ou vinculados às unidades.</p>
+        </div>
 
-        <form method="post" class="formulario">
-            <div class="campo">
-                <label for="id_unidade">Localização</label>
-                <select id="id_unidade" name="id_unidade">
-                    <option value="">Almoxarifado Central</option>
-                    {% for unidade in unidades %}
-                        <option value="{{ unidade['id_unidade'] }}">
-                            {{ unidade['codigo'] }} - {{ unidade['nome'] }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <small>Deixe em branco se for do almoxarifado central.</small>
+        <form method="post" class="form-moderno">
+            <div class="form-grid form-grid--2-colunas">
+                <div class="form-campo">
+                    <label for="id_unidade">Localização</label>
+                    <select id="id_unidade" name="id_unidade">
+                        <option value="">Almoxarifado Central</option>
+                        {% for unidade in unidades %}
+                            <option value="{{ unidade['id_unidade'] }}">
+                                {{ unidade['codigo'] }} - {{ unidade['nome'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-campo__ajuda">Deixe como Almoxarifado Central se o item não estiver vinculado a uma unidade.</span>
+                </div>
+
+                <div class="form-campo">
+                    <label for="modelo">Modelo</label>
+                    <input
+                        type="text"
+                        id="modelo"
+                        name="modelo"
+                        placeholder="Ex.: Luva de Procedimento M"
+                        required
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="marca">Marca</label>
+                    <input
+                        type="text"
+                        id="marca"
+                        name="marca"
+                        placeholder="Ex.: Descartex"
+                        required
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="numero_serie">Número de série / Lote</label>
+                    <input
+                        type="text"
+                        id="numero_serie"
+                        name="numero_serie"
+                        placeholder="Ex.: LOTE123456"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="quantidade">Quantidade</label>
+                    <input
+                        type="number"
+                        id="quantidade"
+                        name="quantidade"
+                        placeholder="0"
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="data_entrega">Data de entrega</label>
+                    <input
+                        type="date"
+                        id="data_entrega"
+                        name="data_entrega"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="data_fabricacao">Data de fabricação</label>
+                    <input
+                        type="date"
+                        id="data_fabricacao"
+                        name="data_fabricacao"
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="vencimento">Vencimento</label>
+                    <input
+                        type="date"
+                        id="vencimento"
+                        name="vencimento"
+                    >
+                </div>
+
+                <div class="form-campo form-campo--full">
+                    <label for="localizacao">Localização (rua/prateleira)</label>
+                    <input
+                        type="text"
+                        id="localizacao"
+                        name="localizacao"
+                        placeholder="Ex.: Rua A, Prateleira 3"
+                    >
+                </div>
+
+                <div class="form-campo form-campo--full">
+                    <label for="observacao">Observação</label>
+                    <textarea
+                        id="observacao"
+                        name="observacao"
+                        rows="3"
+                        placeholder="Detalhes adicionais"
+                    ></textarea>
+                </div>
             </div>
 
-            <div class="campo">
-                <label for="modelo">Modelo *</label>
-                <input
-                    type="text"
-                    id="modelo"
-                    name="modelo"
-                    placeholder="Ex.: Luva de Procedimento M"
-                    required
-                >
+            <div class="form-acoes">
+                <button class="botao botao--primario" type="submit">
+                    Cadastrar insumo
+                </button>
             </div>
-
-            <div class="campo">
-                <label for="marca">Marca *</label>
-                <input
-                    type="text"
-                    id="marca"
-                    name="marca"
-                    placeholder="Ex.: Descartex"
-                    required
-                >
-            </div>
-
-            <div class="campo">
-                <label for="numero_serie">Número de série / Lote</label>
-                <input
-                    type="text"
-                    id="numero_serie"
-                    name="numero_serie"
-                    placeholder="Ex.: LOTE123456"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="quantidade">Quantidade</label>
-                <input
-                    type="number"
-                    id="quantidade"
-                    name="quantidade"
-                    placeholder="0"
-                    min="0"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="data_entrega">Data de entrega</label>
-                <input
-                    type="date"
-                    id="data_entrega"
-                    name="data_entrega"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="data_fabricacao">Data de fabricação</label>
-                <input
-                    type="date"
-                    id="data_fabricacao"
-                    name="data_fabricacao"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="vencimento">Vencimento</label>
-                <input
-                    type="date"
-                    id="vencimento"
-                    name="vencimento"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="localizacao">Localização (rua/prateleira)</label>
-                <input
-                    type="text"
-                    id="localizacao"
-                    name="localizacao"
-                    placeholder="Ex.: Rua A, Prateleira 3"
-                >
-            </div>
-
-            <div class="campo">
-                <label for="observacao">Observação</label>
-                <textarea
-                    id="observacao"
-                    name="observacao"
-                    rows="3"
-                    placeholder="Detalhes adicionais"
-                ></textarea>
-            </div>
-
-            <button class="botao botao--primario" type="submit">
-                Cadastrar insumo
-            </button>
         </form>
     </article>
 
@@ -143,12 +150,12 @@
                             <th>Qtd</th>
                             <th>Vencimento</th>
                             <th>Localização</th>
+                            <th>Observação</th>
                             <th>Ações</th>
-                        </tr>
                     </thead>
                     <tbody>
                         {% for insumo in insumos %}
-                            <tr class="{% if insumo['vencimento'] and insumo['vencimento'] < '2026-09-26' %}linha-vencido{% endif %}">
+                            <tr>
                                 <td>{{ insumo['nome_unidade'] or 'Almoxarifado' }}</td>
                                 <td><strong>{{ insumo['modelo'] }}</strong></td>
                                 <td>{{ insumo['marca'] }}</td>
@@ -156,7 +163,7 @@
                                 <td>{{ insumo['quantidade'] }}</td>
                                 <td>
                                     {% if insumo['vencimento'] %}
-                                        <span class="{% if insumo['vencimento'] < '2026-09-26' %}vencido{% elif insumo['vencimento'] < '2026-12-26' %}vence-logo{% endif %}">
+                                        <span class="status-vencimento {% if insumo['vencimento'] < '2026-09-26' %}status-vencido{% elif insumo['vencimento'] < '2026-12-26' %}status-proximo{% else %}status-valido{% endif %}">
                                             {{ insumo['vencimento'] }}
                                         </span>
                                     {% else %}
@@ -164,14 +171,16 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ insumo['localizacao'] or '-' }}</td>
+                                <td>{{ insumo['observacao'] or '-' }}</td>
                                 <td>
                                     <a
                                         class="botao botao--editar"
                                         href="{{ url_for('editar_insumo', id_insumo=insumo['id_insumo']) }}"
-                                        >
+                                    >
                                         Editar
                                     </a>
                                 </td>
+                                
                             </tr>
                         {% endfor %}
                     </tbody>

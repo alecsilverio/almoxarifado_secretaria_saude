@@ -1,5 +1,6 @@
 :root {
     --azul-institucional: #173557;
+    --azul-escuro: #0f2945;
     --vermelho-institucional: #d51317;
     --branco: #ffffff;
 
@@ -16,39 +17,73 @@
 
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--texto);
     background: var(--fundo);
+    color: var(--texto);
+    font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =====================================================
+   ESTRUTURA PRINCIPAL
+   ===================================================== */
 
 .topo {
+    align-items: center;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
     min-height: 86px;
     padding: 16px max(24px, calc((100% - 1180px) / 2));
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    color: var(--branco);
     background: var(--azul-institucional);
     border-bottom: 5px solid var(--vermelho-institucional);
+    color: var(--branco);
 }
 
+.conteudo {
+    width: min(1180px, calc(100% - 48px));
+    min-height: calc(100vh - 161px);
+    margin: 0 auto;
+    padding: 44px 0;
+}
+
+.rodape {
+    padding: 18px 24px;
+    background: var(--azul-institucional);
+    border-top: 4px solid var(--vermelho-institucional);
+    color: var(--branco);
+    font-size: 0.86rem;
+    text-align: center;
+}
+
+.rodape p {
+    margin: 0;
+}
+
+/* =====================================================
+   CABEÇALHO E MENU
+   ===================================================== */
+
 .marca {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 12px;
 }
 
+.marca__logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
 .marca__icone {
+    display: grid;
     width: 42px;
     height: 42px;
-    display: grid;
     place-items: center;
+    background: var(--branco);
     border-radius: 8px;
+    color: var(--vermelho-institucional);
     font-size: 28px;
     font-weight: bold;
-    color: var(--vermelho-institucional);
-    background: var(--branco);
 }
 
 .marca h1,
@@ -84,19 +119,16 @@ body {
     background: rgba(255, 255, 255, 0.16);
 }
 
-.conteudo {
-    width: min(1180px, calc(100% - 48px));
-    min-height: calc(100vh - 161px);
-    margin: 0 auto;
-    padding: 44px 0;
-}
+/* =====================================================
+   PÁGINA INICIAL
+   ===================================================== */
 
 .boas-vindas {
     padding: 38px;
+    background: var(--azul-institucional);
     border-left: 7px solid var(--vermelho-institucional);
     border-radius: 12px;
     color: var(--branco);
-    background: var(--azul-institucional);
 }
 
 .boas-vindas h2 {
@@ -112,10 +144,14 @@ body {
 }
 
 .texto-superior {
-    color: #ffffff;
+    color: var(--branco);
     font-size: 0.76rem;
     font-weight: bold;
     letter-spacing: 0.11em;
+}
+
+.texto-superior--azul {
+    color: var(--azul-institucional);
 }
 
 .atalhos {
@@ -127,18 +163,18 @@ body {
 
 .card {
     padding: 24px;
+    background: var(--branco);
     border: 1px solid var(--borda);
     border-top: 5px solid var(--vermelho-institucional);
     border-radius: 10px;
     color: inherit;
-    background: var(--branco);
     text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px);
     box-shadow: 0 10px 25px rgba(23, 53, 87, 0.16);
+    transform: translateY(-4px);
 }
 
 .card__icone {
@@ -157,17 +193,478 @@ body {
     line-height: 1.5;
 }
 
-.rodape {
-    padding: 18px 24px;
-    color: var(--branco);
-    font-size: 0.86rem;
-    text-align: center;
-    background: var(--azul-institucional);
-    border-top: 4px solid var(--vermelho-institucional);
+/* =====================================================
+   PAINÉIS E TABELAS
+   ===================================================== */
+
+.painel {
+    min-width: 0;
+    padding: 24px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
-.rodape p {
+.titulo-painel {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.titulo-painel h3 {
     margin: 0;
+    color: var(--azul-institucional);
+}
+
+.contador {
+    min-width: 30px;
+    padding: 5px 9px;
+    background: var(--azul-suave);
+    border-radius: 999px;
+    color: var(--azul-institucional);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.tabela-responsiva {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 11px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #f1f5f9;
+    color: var(--azul-institucional);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+td {
+    font-size: 0.9rem;
+}
+
+tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+tbody tr:hover {
+    background: #f3f4f6;
+}
+
+.sem-registros,
+.estado-vazio {
+    padding: 22px;
+    color: #6b7280;
+    text-align: center;
+}
+
+.estado-vazio {
+    margin: 20px 0 0;
+}
+
+.coluna-observacao {
+    max-width: 250px;
+    overflow-wrap: break-word;
+}
+
+/* =====================================================
+   LAYOUTS DE CADASTRO
+   ===================================================== */
+
+.grid-unidades,
+.grid-insumos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.grid-equipamentos {
+    display: grid;
+    grid-template-columns: minmax(520px, 1fr) minmax(0, 1.45fr);
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+}
+
+.grid-equipamentos table {
+    min-width: 900px;
+}
+
+/* =====================================================
+   FORMULÁRIOS MODERNOS
+   ===================================================== */
+
+.painel-form {
+    padding: 28px;
+}
+
+.painel-form__cabecalho {
+    margin-bottom: 24px;
+}
+
+.painel-form__cabecalho h3 {
+    margin: 0 0 8px;
+    color: var(--azul-institucional);
+    font-size: 1.35rem;
+}
+
+.painel-form__cabecalho p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 0.95rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.form-grid--2-colunas {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.grid-equipamentos .form-grid--2-colunas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-campo {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-campo--full {
+    grid-column: 1 / -1;
+}
+
+.form-campo label {
+    margin-bottom: 6px;
+    color: #374151;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.form-campo input,
+.form-campo select,
+.form-campo textarea {
+    width: 100%;
+    padding: 11px 13px;
+    background: var(--branco);
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    color: #111827;
+    font: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-campo textarea {
+    min-height: 92px;
+    resize: vertical;
+}
+
+.form-campo input::placeholder,
+.form-campo textarea::placeholder {
+    color: #9ca3af;
+}
+
+.form-campo input:hover,
+.form-campo select:hover,
+.form-campo textarea:hover {
+    border-color: #d1d5db;
+}
+
+.form-campo input:focus,
+.form-campo select:focus,
+.form-campo textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+.form-campo__ajuda {
+    margin-top: 6px;
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.form-acoes,
+.acoes-formulario {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+/* =====================================================
+   BOTÕES, BADGES E STATUS
+   ===================================================== */
+
+.botao {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.botao--primario,
+.botao-secundario,
+.botao--secundario {
+    border: none;
+    background: var(--azul-institucional);
+    color: var(--branco);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.botao--primario {
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+
+.botao--primario:hover,
+.botao-secundario:hover,
+.botao--secundario:hover {
+    background: var(--azul-escuro);
+}
+
+.botao--primario:hover {
+    transform: translateY(-1px);
+}
+
+.botao--primario:active {
+    transform: translateY(0);
+}
+
+.botao--editar {
+    padding: 7px 10px;
+    background: #eaf2ff;
+    border: 1px solid #b8d2ff;
+    border-radius: 5px;
+    color: #174ea6;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.botao--editar:hover {
+    background: #d6e7ff;
+}
+
+.botao--cancelar {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.botao--cancelar:hover {
+    background: #e5e7eb;
+}
+
+.badge,
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge--em-uso,
+.status--valido,
+.status-valido {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge--manutencao,
+.status--proximo,
+.status-proximo {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.badge--quebrado,
+.status--vencido,
+.status-vencido {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge--sucata,
+.status--sem-vencimento,
+.status-sem-vencimento {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.badge--reserva {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* =====================================================
+   RELATÓRIOS
+   ===================================================== */
+
+.cards-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+}
+
+.card-resumo {
+    padding: 18px;
+    background: var(--branco);
+    border-left: 5px solid var(--azul-institucional);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.card-resumo .rotulo {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--texto-suave);
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.card-resumo strong {
+    display: block;
+    color: var(--azul-institucional);
+    font-size: 2rem;
+}
+
+.card-resumo.alerta {
+    border-left-color: #c0392b;
+}
+
+.card-resumo.alerta strong {
+    color: #c0392b;
+}
+
+.card-resumo.aviso {
+    border-left-color: #e67e22;
+}
+
+.card-resumo.aviso strong {
+    color: #e67e22;
+}
+
+.painel-relatorio {
+    margin-bottom: 28px;
+    padding: 20px;
+    background: var(--branco);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cabecalho-relatorio {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cabecalho-relatorio h3 {
+    margin: 0 0 5px;
+    color: var(--azul-institucional);
+    font-size: 1.2rem;
+}
+
+.cabecalho-relatorio p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 0.9rem;
+}
+
+/* =====================================================
+   LOGIN
+   ===================================================== */
+
+.pagina-login {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--azul-institucional), #0a1f33);
+}
+
+.container-login {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.cabecalho-login {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 32px;
+    color: var(--branco);
+}
+
+.formulario-login {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    background: var(--branco);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.formulario-login h2 {
+    margin: 0 0 8px;
+    color: var(--azul-institucional);
+}
+
+.formulario-login p {
+    margin: 0 0 24px;
+    color: var(--texto-suave);
+}
+
+.rodape--simples {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 24px;
+    background: transparent;
+    border-top: 0;
+    color: var(--branco);
+    text-align: center;
+}
+
+/* =====================================================
+   RESPONSIVIDADE
+   ===================================================== */
+
+@media (max-width: 1100px) {
+    .grid-equipamentos {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 700px) {
@@ -188,494 +685,7 @@ body {
     .atalhos {
         grid-template-columns: 1fr;
     }
-}
 
-.grid-equipamentos {
-    display: grid;
-    grid-template-columns: minmax(320px, 0.9fr) minmax(500px, 1.4fr);
-    gap: 22px;
-    align-items: start;
-}
-
-.campo textarea {
-    width: 100%;
-    padding: 11px 12px;
-    border: 1px solid var(--borda);
-    border-radius: 6px;
-    outline: none;
-    font: inherit;
-    resize: vertical;
-    min-height: 80px;
-}
-
-.campo textarea:focus {
-    border-color: var(--azul-institucional);
-    box-shadow: 0 0 0 3px rgba(23, 53, 87, 0.14);
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: bold;
-}
-
-.badge--em-uso {
-    color: #155c41;
-    background: #e7f5ed;
-}
-
-.badge--manutencao {
-    color: #8f6b00;
-    background: #fff8dc;
-}
-
-.badge--quebrado {
-    color: #8f1014;
-    background: #fde8e8;
-}
-
-.badge--sucata {
-    color: #5c6b75;
-    background: #eef2f5;
-}
-
-.badge--reserva {
-    color: #146c94;
-    background: #eaf5fb;
-}
-
-@media (max-width: 950px) {
-    .grid-equipamentos {
-        grid-template-columns: 1fr;
-    }
-}
-
-.pagina-login {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(135deg, var(--azul-institucional), #0a1f33);
-}
-
-.container-login {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-}
-
-.cabecalho-login {
-    width: 100%;
-    max-width: 420px;
-    margin-bottom: 32px;
-    color: var(--branco);
-}
-
-.formulario-login {
-    width: 100%;
-    max-width: 420px;
-    padding: 32px;
-    border-radius: 12px;
-    background: var(--branco);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.formulario-login h2 {
-    margin: 0 0 8px;
-    color: var(--azul-institucional);
-}
-
-.formulario-login p {
-    margin: 0 0 24px;
-    color: var(--texto-suave);
-}
-
-.rodape--simples {
-    width: 100%;
-    max-width: 420px;
-    margin-top: 24px;
-    color: var(--branco);
-    background: transparent;
-    border-top: 0;
-    text-align: center;
-}
-.marca__logo {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-}
-
-.marca {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.cards-resumo {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin: 20px 0 30px;
-}
-
-.card-resumo {
-    background: #ffffff;
-    border-left: 5px solid #173557;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 18px;
-}
-
-.card-resumo .rotulo {
-    color: #5a6470;
-    display: block;
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-}
-
-.card-resumo strong {
-    color: #173557;
-    font-size: 2rem;
-}
-
-.card-resumo.alerta {
-    border-left-color: #c0392b;
-}
-
-.card-resumo.alerta strong {
-    color: #c0392b;
-}
-
-.card-resumo.aviso {
-    border-left-color: #e67e22;
-}
-
-.card-resumo.aviso strong {
-    color: #e67e22;
-}
-
-.painel-relatorio {
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin-bottom: 28px;
-    padding: 20px;
-}
-
-.cabecalho-relatorio {
-    align-items: center;
-    display: flex;
-    gap: 16px;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.cabecalho-relatorio h3 {
-    color: #173557;
-    margin: 0 0 5px;
-}
-
-.cabecalho-relatorio p {
-    color: #5a6470;
-    margin: 0;
-}
-
-.botao {
-    border-radius: 5px;
-    display: inline-block;
-    font-weight: 600;
-    padding: 10px 14px;
-    text-decoration: none;
-}
-
-.botao-secundario {
-    background: #173557;
-    color: #ffffff;
-}
-
-.botao-secundario:hover {
-    background: #0f2945;
-}
-
-.tabela-responsiva {
-    overflow-x: auto;
-}
-
-table {
-    border-collapse: collapse;
-    min-width: 760px;
-    width: 100%;
-}
-
-th,
-td {
-    border-bottom: 1px solid #e5e7eb;
-    padding: 11px 10px;
-    text-align: left;
-    vertical-align: top;
-}
-
-th {
-    background: #f1f5f9;
-    color: #173557;
-    font-size: 0.88rem;
-}
-
-td {
-    font-size: 0.9rem;
-}
-
-.sem-registros {
-    color: #6b7280;
-    padding: 22px;
-    text-align: center;
-}
-
-.status {
-    border-radius: 999px;
-    display: inline-block;
-    font-size: 0.76rem;
-    font-weight: 600;
-    padding: 5px 9px;
-    white-space: nowrap;
-}
-
-.status-vencido {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.status-proximo {
-    background: #ffedd5;
-    color: #c2410c;
-}
-
-.status-valido {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.status-sem-vencimento {
-    background: #e5e7eb;
-    color: #4b5563;
-}
-
-@media (max-width: 700px) {
-    .cabecalho-relatorio {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-}
-
-/* Cards de resumo dos relatórios */
-.cards-resumo {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin: 20px 0 30px;
-}
-
-.card-resumo {
-    background: #ffffff;
-    border-left: 5px solid #173557;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 18px;
-    text-align: center;
-}
-
-.card-resumo .rotulo {
-    color: #5a6470;
-    display: block;
-    font-size: 0.85rem;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.card-resumo strong {
-    color: #173557;
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-.card-resumo.alerta {
-    border-left-color: #c0392b;
-}
-
-.card-resumo.alerta strong {
-    color: #c0392b;
-}
-
-.card-resumo.aviso {
-    border-left-color: #e67e22;
-}
-
-.card-resumo.aviso strong {
-    color: #e67e22;
-}
-
-/* Painel de relatório */
-.painel-relatorio {
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin-bottom: 28px;
-    padding: 20px;
-}
-
-.cabecalho-relatorio {
-    align-items: center;
-    display: flex;
-    gap: 16px;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.cabecalho-relatorio h3 {
-    color: #173557;
-    margin: 0 0 5px;
-    font-size: 1.2rem;
-}
-
-.cabecalho-relatorio p {
-    color: #5a6470;
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-/* Botões nos relatórios */
-.botao--secundario {
-    background: #173557;
-    color: #ffffff;
-    border-radius: 6px;
-    padding: 10px 14px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
-}
-
-.botao--secundario:hover {
-    background: #0f2945;
-}
-
-/* Tabelas */
-.tabela-responsiva {
-    overflow-x: auto;
-}
-
-table {
-    border-collapse: collapse;
-    min-width: 760px;
-    width: 100%;
-}
-
-th,
-td {
-    border-bottom: 1px solid #e5e7eb;
-    padding: 11px 10px;
-    text-align: left;
-    vertical-align: top;
-}
-
-th {
-    background: #f1f5f9;
-    color: #173557;
-    font-size: 0.88rem;
-    font-weight: 700;
-}
-
-td {
-    font-size: 0.9rem;
-}
-
-tbody tr:nth-child(even) {
-    background: #f9fafb;
-}
-
-tbody tr:hover {
-    background: #f3f4f6;
-}
-
-.sem-registros {
-    color: #6b7280;
-    padding: 22px;
-    text-align: center;
-}
-
-/* Status de vencimento */
-.status {
-    border-radius: 999px;
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 5px 9px;
-    white-space: nowrap;
-}
-
-.status--vencido {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.status--proximo {
-    background: #ffedd5;
-    color: #c2410c;
-}
-
-.status--valido {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.status--sem-vencimento {
-    background: #e5e7eb;
-    color: #4b5563;
-}
-
-/* Badges de situação dos equipamentos */
-.badge {
-    border-radius: 999px;
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 5px 9px;
-    white-space: nowrap;
-}
-
-.badge--em-uso {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.badge--manutencao {
-    background: #ffedd5;
-    color: #c2410c;
-}
-
-.badge--quebrado {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.badge--sucata {
-    background: #f3f4f6;
-    color: #4b5563;
-}
-
-.badge--reserva {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-/* Responsividade */
-@media (max-width: 700px) {
     .cabecalho-relatorio {
         align-items: flex-start;
         flex-direction: column;
@@ -686,39 +696,23 @@ tbody tr:hover {
     }
 }
 
-.botao--editar {
-    background: #eaf2ff;
-    border: 1px solid #b8d2ff;
-    color: #174ea6;
-    font-size: 0.82rem;
-    padding: 7px 10px;
-    text-decoration: none;
-    white-space: nowrap;
-}
+@media (max-width: 640px) {
+    .painel,
+    .painel-form {
+        padding: 20px;
+    }
 
-.botao--editar:hover {
-    background: #d6e7ff;
-}
+    .form-grid--2-colunas,
+    .grid-equipamentos .form-grid--2-colunas {
+        grid-template-columns: 1fr;
+    }
 
-.botao--cancelar {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    color: #374151;
-    text-decoration: none;
-}
+    .form-acoes,
+    .acoes-formulario {
+        flex-direction: column;
+    }
 
-.botao--cancelar:hover {
-    background: #e5e7eb;
-}
-
-.acoes-formulario {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
-
-.painel--formulario {
-    margin: 0 auto;
-    max-width: 760px;
+    .botao--primario {
+        width: 100%;
+    }
 }

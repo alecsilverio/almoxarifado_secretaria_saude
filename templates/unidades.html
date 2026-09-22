@@ -12,67 +12,80 @@
 </section>
 
 <section class="grid-unidades">
-    <article class="painel">
-        <h3>Nova unidade</h3>
+    <article class="painel painel-form">
+        <div class="painel-form__cabecalho">
+            <h3>Nova unidade</h3>
+            <p>Cadastre uma nova unidade de saúde para organizar equipamentos e insumos.</p>
+        </div>
 
-        <form method="post" class="formulario">
-            <div class="campo">
-                <label for="codigo">Código da unidade *</label>
-                <input
-                    type="text"
-                    id="codigo"
-                    name="codigo"
-                    placeholder="Ex.: UBS001"
-                    maxlength="20"
-                    required
-                >
+        <form method="post" class="form-moderno">
+            <div class="form-grid form-grid--2-colunas">
+                <div class="form-campo">
+                    <label for="codigo">Código da unidade</label>
+                    <input
+                        type="text"
+                        id="codigo"
+                        name="codigo"
+                        placeholder="Ex.: UBS001"
+                        maxlength="20"
+                        required
+                    >
+                    <span class="form-campo__ajuda">Código único para identificação da unidade.</span>
+                </div>
+
+                <div class="form-campo">
+                    <label for="nome">Nome da unidade</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Ex.: UBS Vila Alegre"
+                        required
+                    >
+                </div>
+
+                <div class="form-campo">
+                    <label for="tipo">Tipo de unidade</label>
+                    <select id="tipo" name="tipo">
+                        <option value="">Selecione</option>
+                        <option value="UBS">UBS</option>
+                        <option value="USF">USF</option>
+                        <option value="CAPS">CAPS</option>
+                        <option value="UPA">UPA</option>
+                        <option value="SAMU">SAMU</option>
+                        <option value="SAD">SAD</option>
+                        <option value="IST">IST</option>
+                        <option value="Ambulatório de Saúde Mental">
+                            Ambulatório de Saúde Mental
+                        </option>
+                        <option value="Estabelecimento Penal Feminino">
+                            Estabelecimento Penal Feminino
+                        </option>
+                        <option value="Penitenciária de Segurança Média">
+                            Penitenciária de Segurança Média
+                        </option>
+                        <option value="Colônia Penal">Colônia Penal</option>
+                        <option value="Secretaria">Secretaria</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-campo form-campo--full">
+                    <label for="endereco">Endereço</label>
+                    <input
+                        type="text"
+                        id="endereco"
+                        name="endereco"
+                        placeholder="Rua, número e bairro"
+                    >
+                </div>
             </div>
 
-            <div class="campo">
-                <label for="nome">Nome da unidade *</label>
-                <input
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    placeholder="Ex.: UBS Vila Alegre"
-                    required
-                >
+            <div class="form-acoes">
+                <button class="botao botao--primario" type="submit">
+                    Cadastrar unidade
+                </button>
             </div>
-
-            <div class="campo">
-                <label for="tipo">Tipo</label>
-                <select id="tipo" name="tipo">
-                    <option value="">Selecione</option>
-                    <option value="UBS">UBS</option>
-                    <option value="USF">USF</option>
-                    <option value="CAPS">CAPS</option>
-                    <option value="Hospital">Hospital</option>
-                    <option value="SAD">SAD</option>
-                    <option value="IST">IST</option>
-                    <option value="Estabelecimento Penal Feminino"> Estabelecimento Penal Feminino</option>
-                    <option value="Ambulatório de Saúde Mental">Ambulatório de Saúde Mental</option>
-                    <option value="Penitenciária de Segurança Média">Penitenciária de Segurança Média</option>
-                    <option value="Colônia Penal">Colônia Penal</option>
-                    <option value="UPA">UPA</option>
-                    <option value="SAMU">SAMU</option>
-                    <option value="Secretaria">Secretaria</option>
-                    <option value="Outro">Outro</option>
-                </select>
-            </div>
-
-            <div class="campo">
-                <label for="endereco">Endereço</label>
-                <input
-                    type="text"
-                    id="endereco"
-                    name="endereco"
-                    placeholder="Rua, número e bairro"
-                >
-            </div>
-
-            <button class="botao botao--primario" type="submit">
-                Cadastrar unidade
-            </button>
         </form>
     </article>
 
@@ -105,10 +118,10 @@
                                     <a
                                         class="botao botao--editar"
                                         href="{{ url_for('editar_unidade', id_unidade=unidade['id_unidade']) }}"
-                                        >
+                                    >
                                         Editar
-                                        </a>
-                                </td>   
+                                    </a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
