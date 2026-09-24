@@ -266,22 +266,34 @@ def unidades():
     if request.method == "POST":
         codigo = request.form.get("codigo", "").strip().upper()
         nome = request.form.get("nome", "").strip()
-        tipo = request.form.get("tipo", "").strip()
+        grupo_rede = request.form.get("grupo_rede", "").strip()
+        tipo_unidade = request.form.get("tipo_unidade", "").strip()
         endereco = request.form.get("endereco", "").strip()
 
-        if not codigo or not nome:
-            flash("Código e nome da unidade são obrigatórios.", "erro")
-
+        if not codigo or not nome or not grupo_rede or not tipo_unidade:
+            flash(
+                "Código, nome, grupo da rede e tipo de unidade são obrigatórios.",
+                "erro"
+            )
         else:
             try:
                 with get_db_connection() as conn:
-                    conn.execute(
-                        """
-                        INSERT INTO unidades (codigo, nome, tipo, endereco)
-                        VALUES (?, ?, ?, ?)
-                        """,
-                        (codigo, nome, tipo, endereco),
-                    )
+                    conn.execute("""
+                        INSERT INTO unidades (
+                            codigo,
+                            nome,
+                            grupo_rede,
+                            tipo_unidade,
+                            endereco
+                        )
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (
+                        codigo,
+                        nome,
+                        grupo_rede,
+                        tipo_unidade,
+                        endereco
+                    ))
 
                 flash("Unidade cadastrada com sucesso!", "sucesso")
                 return redirect(url_for("unidades"))
@@ -292,34 +304,45 @@ def unidades():
                     "erro"
                 )
 
+            except sqlite3.Error as erro_banco:
+                flash(
+                    f"Erro ao cadastrar a unidade: {erro_banco}",
+                    "erro"
+                )
+
     termo_busca = request.args.get("busca", "").strip()
 
     with get_db_connection() as conn:
         if termo_busca:
-            lista_unidades = conn.execute(
-                """
+            termo = f"%{termo_busca}%"
+
+            lista_unidades = conn.execute("""
                 SELECT *
                 FROM unidades
                 WHERE codigo LIKE ?
-                OR nome LIKE ?
-                OR tipo LIKE ?
+                   OR nome LIKE ?
+                   OR grupo_rede LIKE ?
+                   OR tipo_unidade LIKE ?
+                   OR endereco LIKE ?
                 ORDER BY nome
-                """,
-                (
-                    f"%{termo_busca}%",
-                    f"%{termo_busca}%",
-                    f"%{termo_busca}%",
-                ),
-            ).fetchall()
+            """, (
+                termo,
+                termo,
+                termo,
+                termo,
+                termo
+            )).fetchall()
         else:
-            lista_unidades = conn.execute(
-                "SELECT * FROM unidades ORDER BY nome"
-            ).fetchall()
+            lista_unidades = conn.execute("""
+                SELECT *
+                FROM unidades
+                ORDER BY nome
+            """).fetchall()
 
     return render_template(
         "unidades.html",
         unidades=lista_unidades,
-        busca=termo_busca,
+        busca=termo_busca
     )
 
 @app.route("/unidades/<int:id_unidade>/editar", methods=["GET", "POST"])
@@ -328,14 +351,11 @@ def editar_unidade(id_unidade):
     """Edita uma unidade cadastrada."""
 
     with get_db_connection() as conn:
-        unidade = conn.execute(
-            """
+        unidade = conn.execute("""
             SELECT *
             FROM unidades
             WHERE id_unidade = ?
-            """,
-            (id_unidade,),
-        ).fetchone()
+        """, (id_unidade,)).fetchone()
 
     if unidade is None:
         flash("Unidade não encontrada.", "erro")
@@ -344,52 +364,78 @@ def editar_unidade(id_unidade):
     if request.method == "POST":
         codigo = request.form.get("codigo", "").strip().upper()
         nome = request.form.get("nome", "").strip()
-        tipo = request.form.get("tipo", "").strip()
+        grupo_rede = request.form.get("grupo_rede", "").strip()
+        tipo_unidade = request.form.get("tipo_unidade", "").strip()
         endereco = request.form.get("endereco", "").strip()
 
-        if not codigo or not nome:
-            flash("Código e nome da unidade são obrigatórios.", "erro")
-        else:
-            try:
-                with get_db_connection() as conn:
-                    conn.execute(
-                        """
-                        UPDATE unidades
-                        SET
-                            codigo = ?,
-                            nome = ?,
-                            tipo = ?,
-                            endereco = ?
-                        WHERE id_unidade = ?
-                        """,
-                        (
-                            codigo,
-                            nome,
-                            tipo,
-                            endereco,
-                            id_unidade,
-                        ),
-                    )
+        if not codigo or not nome or not grupo_rede or not tipo_unidade:
+            flash(
+                "Código, nome, grupo da rede e tipo de unidade são obrigatórios.",
+                "erro"
+            )
 
-                flash("Unidade atualizada com sucesso!", "sucesso")
-                return redirect(url_for("unidades"))
+            unidade = {
+                "id_unidade": id_unidade,
+                "codigo": codigo,
+                "nome": nome,
+                "grupo_rede": grupo_rede,
+                "tipo_unidade": tipo_unidade,
+                "endereco": endereco
+            }
 
-            except sqlite3.IntegrityError:
-                flash(
-                    "Já existe outra unidade cadastrada com este código.",
-                    "erro",
-                )
+            return render_template(
+                "editar_unidade.html",
+                unidade=unidade
+            )
 
-        # Mantém os dados digitados caso a validação falhe.
+        try:
+            with get_db_connection() as conn:
+                conn.execute("""
+                    UPDATE unidades
+                    SET
+                        codigo = ?,
+                        nome = ?,
+                        grupo_rede = ?,
+                        tipo_unidade = ?,
+                        endereco = ?
+                    WHERE id_unidade = ?
+                """, (
+                    codigo,
+                    nome,
+                    grupo_rede,
+                    tipo_unidade,
+                    endereco,
+                    id_unidade
+                ))
+
+            flash("Unidade atualizada com sucesso!", "sucesso")
+            return redirect(url_for("unidades"))
+
+        except sqlite3.IntegrityError:
+            flash(
+                "Já existe outra unidade cadastrada com este código.",
+                "erro"
+            )
+
+        except sqlite3.Error as erro_banco:
+            flash(
+                f"Erro ao atualizar a unidade: {erro_banco}",
+                "erro"
+            )
+
         unidade = {
             "id_unidade": id_unidade,
             "codigo": codigo,
             "nome": nome,
-            "tipo": tipo,
-            "endereco": endereco,
+            "grupo_rede": grupo_rede,
+            "tipo_unidade": tipo_unidade,
+            "endereco": endereco
         }
 
-    return render_template("editar_unidade.html", unidade=unidade)
+    return render_template(
+        "editar_unidade.html",
+        unidade=unidade
+    )
 
 # =========================================================
 # EQUIPAMENTOS
@@ -1318,7 +1364,38 @@ def relatorio_insumos_csv():
         linhas,
     )
 
-    
+def atualizar_banco_unidades():
+    """Adiciona as novas colunas à tabela unidades."""
+
+    with get_db_connection() as conn:
+        colunas = [
+            coluna["name"]
+            for coluna in conn.execute(
+                "PRAGMA table_info(unidades)"
+            ).fetchall()
+        ]
+
+        if "grupo_rede" not in colunas:
+            conn.execute("""
+                ALTER TABLE unidades
+                ADD COLUMN grupo_rede TEXT
+            """)
+
+        if "tipo_unidade" not in colunas:
+            conn.execute("""
+                ALTER TABLE unidades
+                ADD COLUMN tipo_unidade TEXT
+            """)
+
+        conn.commit()
+
+
 if __name__ == "__main__":
     init_db()
+    atualizar_banco_unidades()
+    app.run(debug=True)
+
+if __name__ == "__main__":
+    init_db()
+    atualizar_banco_unidades()
     app.run(debug=True)

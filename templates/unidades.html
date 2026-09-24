@@ -3,6 +3,34 @@
 {% block title %}Unidades | Almoxarifado{% endblock %}
 
 {% block content %}
+
+{% set grupos_rede = {
+    'atencao_basica': 'Atenção Básica',
+    'urgencia_emergencia': 'Urgência e Emergência',
+    'centros_especialidades_clinicas': 'Centros de Especialidades e Clínicas',
+    'saude_mental': 'Saúde Mental',
+    'programas_especiais_suporte': 'Programas Especiais e Suporte',
+    'estabelecimentos_penitenciarios': 'Estabelecimentos Penitenciários'
+} %}
+
+{% set tipos_unidade = {
+    'ubs': 'UBS',
+    'usf': 'USF',
+    'upa': 'UPA',
+    'caps': 'CAPS',
+    'samu': 'SAMU',
+    'sad': 'SAD',
+    'ist': 'IST',
+    'ambulatorio_saude_mental': 'Ambulatório de Saúde Mental',
+    'centro_especialidades': 'Centro de Especialidades',
+    'clinica_fisioterapia': 'Clínica de Fisioterapia',
+    'secretaria_saude': 'Secretaria de Saúde',
+    'penitenciaria_seguranca_media': 'Penitenciária de Segurança Média',
+    'estabelecimento_penal_feminino': 'Estabelecimento Penal Feminino',
+    'colonia_penal': 'Colônia Penal',
+    'outro': 'Outro'
+} %}
+
 <section class="cabecalho-pagina">
     <div>
         <p class="texto-superior texto-superior--azul">CADASTRO</p>
@@ -21,7 +49,7 @@
         <form method="post" class="form-moderno">
             <div class="form-grid form-grid--2-colunas">
                 <div class="form-campo">
-                    <label for="codigo">Código da unidade</label>
+                    <label for="codigo">Código da unidade *</label>
                     <input
                         type="text"
                         id="codigo"
@@ -30,43 +58,78 @@
                         maxlength="20"
                         required
                     >
-                    <span class="form-campo__ajuda">Código único para identificação da unidade.</span>
+                    <span class="form-campo__ajuda">
+                        Código único para identificação da unidade.
+                    </span>
                 </div>
 
                 <div class="form-campo">
-                    <label for="nome">Nome da unidade</label>
+                    <label for="nome">Nome da unidade *</label>
                     <input
                         type="text"
                         id="nome"
                         name="nome"
-                        placeholder="Ex.: UBS Vila Alegre"
+                        placeholder="Ex.: USF Vila Alegre"
                         required
                     >
                 </div>
 
                 <div class="form-campo">
-                    <label for="tipo">Tipo de unidade</label>
-                    <select id="tipo" name="tipo">
+                    <label for="grupo_rede">Grupo da rede *</label>
+
+                    <select id="grupo_rede" name="grupo_rede" required>
                         <option value="">Selecione</option>
-                        <option value="UBS">UBS</option>
-                        <option value="USF">USF</option>
-                        <option value="CAPS">CAPS</option>
-                        <option value="UPA">UPA</option>
-                        <option value="SAMU">SAMU</option>
-                        <option value="SAD">SAD</option>
-                        <option value="IST">IST</option>
-                        <option value="Ambulatório de Saúde Mental">
+                        <option value="atencao_basica">Atenção Básica</option>
+                        <option value="urgencia_emergencia">
+                            Urgência e Emergência
+                        </option>
+                        <option value="centros_especialidades_clinicas">
+                            Centros de Especialidades e Clínicas
+                        </option>
+                        <option value="saude_mental">Saúde Mental</option>
+                        <option value="programas_especiais_suporte">
+                            Programas Especiais e Suporte
+                        </option>
+                        <option value="estabelecimentos_penitenciarios">
+                            Estabelecimentos Penitenciários
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-campo">
+                    <label for="tipo_unidade">Tipo de unidade *</label>
+
+                    <select id="tipo_unidade" name="tipo_unidade" required>
+                        <option value="">Selecione</option>
+                        <option value="ubs">UBS</option>
+                        <option value="usf">USF</option>
+                        <option value="upa">UPA</option>
+                        <option value="caps">CAPS</option>
+                        <option value="samu">SAMU</option>
+                        <option value="sad">SAD</option>
+                        <option value="ist">IST</option>
+                        <option value="ambulatorio_saude_mental">
                             Ambulatório de Saúde Mental
                         </option>
-                        <option value="Estabelecimento Penal Feminino">
-                            Estabelecimento Penal Feminino
+                        <option value="centro_especialidades">
+                            Centro de Especialidades
                         </option>
-                        <option value="Penitenciária de Segurança Média">
+                        <option value="clinica_fisioterapia">
+                            Clínica de Fisioterapia
+                        </option>
+                        <option value="secretaria_saude">
+                            Secretaria de Saúde
+                        </option>
+                        <option value="penitenciaria_seguranca_media">
                             Penitenciária de Segurança Média
                         </option>
-                        <option value="Colônia Penal">Colônia Penal</option>
-                        <option value="Secretaria">Secretaria</option>
-                        <option value="Outro">Outro</option>
+                        <option value="estabelecimento_penal_feminino">
+                            Estabelecimento Penal Feminino
+                        </option>
+                        <option value="colonia_penal">
+                            Colônia Penal
+                        </option>
+                        <option value="outro">Outro</option>
                     </select>
                 </div>
 
@@ -102,18 +165,30 @@
                         <tr>
                             <th>Código</th>
                             <th>Unidade</th>
-                            <th>Tipo</th>
+                            <th>Grupo da rede</th>
+                            <th>Tipo de unidade</th>
                             <th>Endereço</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {% for unidade in unidades %}
                             <tr>
                                 <td><strong>{{ unidade['codigo'] }}</strong></td>
+
                                 <td>{{ unidade['nome'] }}</td>
-                                <td>{{ unidade['tipo'] or '-' }}</td>
+
+                                <td>
+                                    {{ grupos_rede.get(unidade['grupo_rede'], '-') }}
+                                </td>
+
+                                <td>
+                                    {{ tipos_unidade.get(unidade['tipo_unidade'], '-') }}
+                                </td>
+
                                 <td>{{ unidade['endereco'] or '-' }}</td>
+
                                 <td>
                                     <a
                                         class="botao botao--editar"
@@ -134,4 +209,5 @@
         {% endif %}
     </article>
 </section>
+
 {% endblock %}

@@ -37,31 +37,165 @@
         </div>
 
         <div class="campo">
-            <label for="tipo">Tipo</label>
-            <select id="tipo" name="tipo">
+            <label for="grupo_rede">Grupo da rede *</label>
+
+            <select id="grupo_rede" name="grupo_rede" required>
                 <option value="">Selecione</option>
 
-                <option value="UBS" {% if unidade['tipo'] == 'UBS' %}selected{% endif %}>UBS</option>
-                <option value="USF" {% if unidade['tipo'] == 'USF' %}selected{% endif %}>USF</option>
-                <option value="CAPS" {% if unidade['tipo'] == 'CAPS' %}selected{% endif %}>CAPS</option>
-                <option value="UPA" {% if unidade['tipo'] == 'UPA' %}selected{% endif %}>UPA</option>
-                <option value="SAMU" {% if unidade['tipo'] == 'SAMU' %}selected{% endif %}>SAMU</option>
-                <option value="SAD" {% if unidade['tipo'] == 'SAD' %}selected{% endif %}>SAD</option>
-                <option value="IST" {% if unidade['tipo'] == 'IST' %}selected{% endif %}>IST</option>
-                <option value="Ambulatório de Saúde Mental" {% if unidade['tipo'] == 'Ambulatório de Saúde Mental' %}selected{% endif %}>
+                <option
+                    value="atencao_basica"
+                    {% if unidade['grupo_rede'] == 'atencao_basica' %}selected{% endif %}
+                >
+                    Atenção Básica
+                </option>
+
+                <option
+                    value="urgencia_emergencia"
+                    {% if unidade['grupo_rede'] == 'urgencia_emergencia' %}selected{% endif %}
+                >
+                    Urgência e Emergência
+                </option>
+
+                <option
+                    value="centros_especialidades_clinicas"
+                    {% if unidade['grupo_rede'] == 'centros_especialidades_clinicas' %}selected{% endif %}
+                >
+                    Centros de Especialidades e Clínicas
+                </option>
+
+                <option
+                    value="saude_mental"
+                    {% if unidade['grupo_rede'] == 'saude_mental' %}selected{% endif %}
+                >
+                    Saúde Mental
+                </option>
+
+                <option
+                    value="programas_especiais_suporte"
+                    {% if unidade['grupo_rede'] == 'programas_especiais_suporte' %}selected{% endif %}
+                >
+                    Programas Especiais e Suporte
+                </option>
+
+                <option
+                    value="estabelecimentos_penitenciarios"
+                    {% if unidade['grupo_rede'] == 'estabelecimentos_penitenciarios' %}selected{% endif %}
+                >
+                    Estabelecimentos Penitenciários
+                </option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="tipo_unidade">Tipo de unidade *</label>
+
+            <select id="tipo_unidade" name="tipo_unidade" required>
+                <option value="">Selecione</option>
+
+                <option
+                    value="ubs"
+                    {% if unidade['tipo_unidade'] == 'ubs' %}selected{% endif %}
+                >
+                    UBS
+                </option>
+
+                <option
+                    value="usf"
+                    {% if unidade['tipo_unidade'] == 'usf' %}selected{% endif %}
+                >
+                    USF
+                </option>
+
+                <option
+                    value="upa"
+                    {% if unidade['tipo_unidade'] == 'upa' %}selected{% endif %}
+                >
+                    UPA
+                </option>
+
+                <option
+                    value="caps"
+                    {% if unidade['tipo_unidade'] == 'caps' %}selected{% endif %}
+                >
+                    CAPS
+                </option>
+
+                <option
+                    value="samu"
+                    {% if unidade['tipo_unidade'] == 'samu' %}selected{% endif %}
+                >
+                    SAMU
+                </option>
+
+                <option
+                    value="sad"
+                    {% if unidade['tipo_unidade'] == 'sad' %}selected{% endif %}
+                >
+                    SAD
+                </option>
+
+                <option
+                    value="ist"
+                    {% if unidade['tipo_unidade'] == 'ist' %}selected{% endif %}
+                >
+                    IST
+                </option>
+
+                <option
+                    value="ambulatorio_saude_mental"
+                    {% if unidade['tipo_unidade'] == 'ambulatorio_saude_mental' %}selected{% endif %}
+                >
                     Ambulatório de Saúde Mental
                 </option>
-                <option value="Estabelecimento Penal Feminino" {% if unidade['tipo'] == 'Estabelecimento Penal Feminino' %}selected{% endif %}>
-                    Estabelecimento Penal Feminino
+
+                <option
+                    value="centro_especialidades"
+                    {% if unidade['tipo_unidade'] == 'centro_especialidades' %}selected{% endif %}
+                >
+                    Centro de Especialidades
                 </option>
-                <option value="Penitenciária de Segurança Média" {% if unidade['tipo'] == 'Penitenciária de Segurança Média' %}selected{% endif %}>
+
+                <option
+                    value="clinica_fisioterapia"
+                    {% if unidade['tipo_unidade'] == 'clinica_fisioterapia' %}selected{% endif %}
+                >
+                    Clínica de Fisioterapia
+                </option>
+
+                <option
+                    value="secretaria_saude"
+                    {% if unidade['tipo_unidade'] == 'secretaria_saude' %}selected{% endif %}
+                >
+                    Secretaria de Saúde
+                </option>
+
+                <option
+                    value="penitenciaria_seguranca_media"
+                    {% if unidade['tipo_unidade'] == 'penitenciaria_seguranca_media' %}selected{% endif %}
+                >
                     Penitenciária de Segurança Média
                 </option>
-                <option value="Colônia Penal" {% if unidade['tipo'] == 'Colônia Penal' %}selected{% endif %}>
+
+                <option
+                    value="estabelecimento_penal_feminino"
+                    {% if unidade['tipo_unidade'] == 'estabelecimento_penal_feminino' %}selected{% endif %}
+                >
+                    Estabelecimento Penal Feminino
+                </option>
+
+                <option
+                    value="colonia_penal"
+                    {% if unidade['tipo_unidade'] == 'colonia_penal' %}selected{% endif %}
+                >
                     Colônia Penal
                 </option>
-                <option value="Secretaria" {% if unidade['tipo'] == 'Secretaria' %}selected{% endif %}>Secretaria</option>
-                <option value="Outro" {% if unidade['tipo'] == 'Outro' %}selected{% endif %}>Outro</option>
+
+                <option
+                    value="outro"
+                    {% if unidade['tipo_unidade'] == 'outro' %}selected{% endif %}
+                >
+                    Outro
+                </option>
             </select>
         </div>
 
