@@ -1,745 +1,438 @@
-:root {
-    --azul-institucional: #173557;
-    --azul-escuro: #0f2945;
-    --vermelho-institucional: #d51317;
-    --branco: #ffffff;
+/* ==========================================================
+   LOGIN — SISTEMA DE CONTROLE DE ALMOXARIFADO
+   Prefeitura Municipal de Três Lagoas | SMS
 
-    --fundo: #f3f5f7;
-    --texto: #1e2933;
-    --texto-suave: #5c6b75;
-    --borda: #d8e0e6;
-    --azul-suave: #eaf0f5;
+   Azul institucional: #173557
+   Vermelho oficial:   #D51317
+   Azul claro:         #B7D6E4
+   ========================================================== */
+
+:root {
+    --azul: #173557;
+    --azul-escuro: #102943;
+    --azul-medio: #21476f;
+    --azul-claro: #b7d6e4;
+    --vermelho: #d51317;
+    --vermelho-escuro: #a80f13;
+    --branco: #ffffff;
+    --texto-suave: #647583;
+    --borda: #d6e0e5;
+    --borda-clara: #e8eef1;
+    --erro-fundo: #fff1f1;
+    --erro-borda: #ecb5b6;
+    --erro-texto: #971519;
 }
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    min-height: 100%;
+}
+
 body {
     margin: 0;
-    background: var(--fundo);
-    color: var(--texto);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* =====================================================
-   ESTRUTURA PRINCIPAL
-   ===================================================== */
-
-.topo {
-    align-items: center;
-    display: flex;
-    gap: 24px;
-    justify-content: space-between;
-    min-height: 86px;
-    padding: 16px max(24px, calc((100% - 1180px) / 2));
-    background: var(--azul-institucional);
-    border-bottom: 5px solid var(--vermelho-institucional);
-    color: var(--branco);
-}
-
-.conteudo {
-    width: min(1180px, calc(100% - 48px));
-    min-height: calc(100vh - 161px);
-    margin: 0 auto;
-    padding: 44px 0;
-}
-
-.rodape {
-    padding: 18px 24px;
-    background: var(--azul-institucional);
-    border-top: 4px solid var(--vermelho-institucional);
-    color: var(--branco);
-    font-size: 0.86rem;
-    text-align: center;
-}
-
-.rodape p {
-    margin: 0;
-}
-
-/* =====================================================
-   CABEÇALHO E MENU
-   ===================================================== */
-
-.marca {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-}
-
-.marca__logo {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-}
-
-.marca__icone {
-    display: grid;
-    width: 42px;
-    height: 42px;
-    place-items: center;
-    background: var(--branco);
-    border-radius: 8px;
-    color: var(--vermelho-institucional);
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.marca h1,
-.marca p {
-    margin: 0;
-}
-
-.marca h1 {
-    font-size: 1.2rem;
-}
-
-.marca p {
-    margin-top: 3px;
-    font-size: 0.82rem;
-    opacity: 0.86;
-}
-
-.menu {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.menu a {
-    padding: 9px 12px;
-    border-radius: 6px;
-    color: var(--branco);
-    font-size: 0.94rem;
-    text-decoration: none;
-}
-
-.menu a:hover {
-    background: rgba(255, 255, 255, 0.16);
-}
-
-/* =====================================================
-   PÁGINA INICIAL
-   ===================================================== */
-
-.boas-vindas {
-    padding: 38px;
-    background: var(--azul-institucional);
-    border-left: 7px solid var(--vermelho-institucional);
-    border-radius: 12px;
-    color: var(--branco);
-}
-
-.boas-vindas h2 {
-    max-width: 700px;
-    margin: 8px 0 14px;
-    font-size: clamp(1.8rem, 4vw, 2.7rem);
-}
-
-.boas-vindas p {
-    max-width: 650px;
-    margin: 0;
-    line-height: 1.6;
-}
-
-.texto-superior {
-    color: var(--branco);
-    font-size: 0.76rem;
-    font-weight: bold;
-    letter-spacing: 0.11em;
-}
-
-.texto-superior--azul {
-    color: var(--azul-institucional);
-}
-
-.atalhos {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 28px;
-}
-
-.card {
-    padding: 24px;
-    background: var(--branco);
-    border: 1px solid var(--borda);
-    border-top: 5px solid var(--vermelho-institucional);
-    border-radius: 10px;
-    color: inherit;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-    box-shadow: 0 10px 25px rgba(23, 53, 87, 0.16);
-    transform: translateY(-4px);
-}
-
-.card__icone {
-    display: inline-block;
-    font-size: 2rem;
-}
-
-.card h3 {
-    margin: 14px 0 8px;
-    color: var(--azul-institucional);
-}
-
-.card p {
-    margin: 0;
-    color: var(--texto-suave);
-    line-height: 1.5;
-}
-
-/* =====================================================
-   PAINÉIS E TABELAS
-   ===================================================== */
-
-.painel {
-    min-width: 0;
-    padding: 24px;
-    background: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-.titulo-painel {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-    justify-content: space-between;
-    margin-bottom: 18px;
-}
-
-.titulo-painel h3 {
-    margin: 0;
-    color: var(--azul-institucional);
-}
-
-.contador {
-    min-width: 30px;
-    padding: 5px 9px;
-    background: var(--azul-suave);
-    border-radius: 999px;
-    color: var(--azul-institucional);
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-align: center;
-}
-
-.tabela-responsiva {
-    max-width: 100%;
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    min-width: 760px;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    padding: 11px 10px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
-    vertical-align: top;
-}
-
-th {
-    background: #f1f5f9;
-    color: var(--azul-institucional);
-    font-size: 0.88rem;
-    font-weight: 700;
-}
-
-td {
-    font-size: 0.9rem;
-}
-
-tbody tr:nth-child(even) {
-    background: #f9fafb;
-}
-
-tbody tr:hover {
-    background: #f3f4f6;
-}
-
-.sem-registros,
-.estado-vazio {
-    padding: 22px;
-    color: #6b7280;
-    text-align: center;
-}
-
-.estado-vazio {
-    margin: 20px 0 0;
-}
-
-.coluna-observacao {
-    max-width: 250px;
-    overflow-wrap: break-word;
-}
-
-/* =====================================================
-   LAYOUTS DE CADASTRO
-   ===================================================== */
-
-.grid-unidades,
-.grid-insumos {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-    align-items: start;
-}
-
-.grid-equipamentos {
-    display: grid;
-    grid-template-columns: minmax(520px, 1fr) minmax(0, 1.45fr);
-    gap: 24px;
-    align-items: start;
-    width: 100%;
-}
-
-.grid-equipamentos table {
-    min-width: 900px;
-}
-
-/* =====================================================
-   FORMULÁRIOS MODERNOS
-   ===================================================== */
-
-.painel-form {
-    padding: 28px;
-}
-
-.painel-form__cabecalho {
-    margin-bottom: 24px;
-}
-
-.painel-form__cabecalho h3 {
-    margin: 0 0 8px;
-    color: var(--azul-institucional);
-    font-size: 1.35rem;
-}
-
-.painel-form__cabecalho p {
-    margin: 0;
-    color: var(--texto-suave);
-    font-size: 0.95rem;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-}
-
-.form-grid--2-colunas {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.grid-equipamentos .form-grid--2-colunas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.form-campo {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-campo--full {
-    grid-column: 1 / -1;
-}
-
-.form-campo label {
-    margin-bottom: 6px;
-    color: #374151;
-    font-size: 0.92rem;
-    font-weight: 600;
-}
-
-.form-campo input,
-.form-campo select,
-.form-campo textarea {
-    width: 100%;
-    padding: 11px 13px;
-    background: var(--branco);
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    color: #111827;
-    font: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-campo textarea {
-    min-height: 92px;
-    resize: vertical;
-}
-
-.form-campo input::placeholder,
-.form-campo textarea::placeholder {
-    color: #9ca3af;
-}
-
-.form-campo input:hover,
-.form-campo select:hover,
-.form-campo textarea:hover {
-    border-color: #d1d5db;
-}
-
-.form-campo input:focus,
-.form-campo select:focus,
-.form-campo textarea:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    outline: none;
-}
-
-.form-campo__ajuda {
-    margin-top: 6px;
-    color: #6b7280;
-    font-size: 0.82rem;
-}
-
-.form-acoes,
-.acoes-formulario {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 22px;
-}
-
-/* =====================================================
-   BOTÕES, BADGES E STATUS
-   ===================================================== */
-
-.botao {
-    display: inline-block;
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.botao--primario,
-.botao-secundario,
-.botao--secundario {
-    border: none;
-    background: var(--azul-institucional);
-    color: var(--branco);
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.botao--primario {
-    padding: 12px 20px;
-    border-radius: 8px;
-}
-
-.botao--primario:hover,
-.botao-secundario:hover,
-.botao--secundario:hover {
-    background: var(--azul-escuro);
-}
-
-.botao--primario:hover {
-    transform: translateY(-1px);
-}
-
-.botao--primario:active {
-    transform: translateY(0);
-}
-
-.botao--editar {
-    padding: 7px 10px;
-    background: #eaf2ff;
-    border: 1px solid #b8d2ff;
-    border-radius: 5px;
-    color: #174ea6;
-    font-size: 0.82rem;
-    white-space: nowrap;
-}
-
-.botao--editar:hover {
-    background: #d6e7ff;
-}
-
-.botao--cancelar {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    color: #374151;
-}
-
-.botao--cancelar:hover {
-    background: #e5e7eb;
-}
-
-.badge,
-.status {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.badge--em-uso,
-.status--valido,
-.status-valido {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.badge--manutencao,
-.status--proximo,
-.status-proximo {
-    background: #ffedd5;
-    color: #c2410c;
-}
-
-.badge--quebrado,
-.status--vencido,
-.status-vencido {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.badge--sucata,
-.status--sem-vencimento,
-.status-sem-vencimento {
-    background: #e5e7eb;
-    color: #4b5563;
-}
-
-.badge--reserva {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-/* =====================================================
-   RELATÓRIOS
-   ===================================================== */
-
-.cards-resumo {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin: 20px 0 30px;
-}
-
-.card-resumo {
-    padding: 18px;
-    background: var(--branco);
-    border-left: 5px solid var(--azul-institucional);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    text-align: center;
-}
-
-.card-resumo .rotulo {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--texto-suave);
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.card-resumo strong {
-    display: block;
-    color: var(--azul-institucional);
-    font-size: 2rem;
-}
-
-.card-resumo.alerta {
-    border-left-color: #c0392b;
-}
-
-.card-resumo.alerta strong {
-    color: #c0392b;
-}
-
-.card-resumo.aviso {
-    border-left-color: #e67e22;
-}
-
-.card-resumo.aviso strong {
-    color: #e67e22;
-}
-
-.painel-relatorio {
-    margin-bottom: 28px;
-    padding: 20px;
-    background: var(--branco);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.cabecalho-relatorio {
-    align-items: center;
-    display: flex;
-    gap: 16px;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.cabecalho-relatorio h3 {
-    margin: 0 0 5px;
-    color: var(--azul-institucional);
-    font-size: 1.2rem;
-}
-
-.cabecalho-relatorio p {
-    margin: 0;
-    color: var(--texto-suave);
-    font-size: 0.9rem;
-}
-
-/* =====================================================
-   LOGIN
-   ===================================================== */
-
-.pagina-login {
-    display: flex;
-    flex-direction: column;
+body.pagina-login {
+    min-width: 320px;
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--azul-institucional), #0a1f33);
+    color: var(--azul);
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(
+            circle at 12% 20%,
+            rgba(183, 214, 228, 0.22) 0%,
+            rgba(183, 214, 228, 0) 32%
+        ),
+        radial-gradient(
+            circle at 88% 85%,
+            rgba(255, 255, 255, 0.09) 0%,
+            rgba(255, 255, 255, 0) 30%
+        ),
+        linear-gradient(
+            135deg,
+            var(--azul-escuro) 0%,
+            var(--azul) 48%,
+            var(--azul-medio) 100%
+        );
 }
 
 .container-login {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    overflow: hidden;
 }
+
+/* Linhas decorativas bem discretas no fundo azul */
+
+.container-login::before,
+.container-login::after {
+    position: absolute;
+    z-index: 0;
+    border: 1px solid rgba(183, 214, 228, 0.15);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+}
+
+.container-login::before {
+    top: -250px;
+    right: -170px;
+    width: 480px;
+    height: 480px;
+}
+
+.container-login::after {
+    bottom: -300px;
+    left: -190px;
+    width: 520px;
+    height: 520px;
+}
+
+/* ==========================================================
+   TOPO — SMS
+   ========================================================== */
 
 .cabecalho-login {
-    width: 100%;
-    max-width: 420px;
-    margin-bottom: 32px;
-    color: var(--branco);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 135px;
+    padding: 20px 30px 25px;
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid rgba(183, 214, 228, 0.70);
+    box-shadow: 0 3px 12px rgba(0, 20, 40, 0.20);
 }
+
+.cabecalho-login::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    background: linear-gradient(
+        90deg,
+        var(--azul) 0%,
+        var(--azul) 77%,
+        var(--vermelho) 77%,
+        var(--vermelho) 100%
+    );
+    content: "";
+}
+
+.logo-sms {
+    display: block;
+    width: min(100%, 670px);
+    max-height: 92px;
+    object-fit: contain;
+}
+
+/* ==========================================================
+   ÁREA DO LOGIN
+   ========================================================== */
 
 .formulario-login {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: min(100% - 32px, 465px);
+    padding: 45px 0;
+    justify-self: center;
+    place-items: center;
+}
+
+.login-card {
+    position: relative;
     width: 100%;
-    max-width: 420px;
-    padding: 32px;
+    padding: 29px 36px 35px;
+    overflow: hidden;
     background: var(--branco);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(183, 214, 228, 0.75);
+    border-radius: 15px;
+    box-shadow:
+        0 20px 45px rgba(0, 20, 40, 0.30),
+        0 1px 0 rgba(255, 255, 255, 0.90) inset;
 }
 
-.formulario-login h2 {
-    margin: 0 0 8px;
-    color: var(--azul-institucional);
+/* Faixa azul e vermelha no topo do cartão */
+
+.login-card::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 76%;
+    height: 7px;
+    background: var(--azul);
+    content: "";
 }
 
-.formulario-login p {
-    margin: 0 0 24px;
+.login-card::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 24%;
+    height: 7px;
+    background: var(--vermelho);
+    content: "";
+}
+
+/* ==========================================================
+   LOGO DA PREFEITURA
+   ========================================================== */
+
+.login-card__marca {
+    display: flex;
+    justify-content: center;
+    margin: 6px 0 17px;
+}
+
+.logo-prefeitura {
+    display: block;
+    width: 118px;
+    height: 118px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* ==========================================================
+   TÍTULO
+   ========================================================== */
+
+.login-card__titulo {
+    margin-bottom: 27px;
+    padding-bottom: 21px;
+    text-align: center;
+    border-bottom: 1px solid var(--borda-clara);
+}
+
+.login-card__subtitulo {
+    margin: 0 0 6px;
+    color: var(--vermelho);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+}
+
+.login-card h1 {
+    margin: 0;
+    color: var(--azul);
+    font-size: 1.54rem;
+    line-height: 1.18;
+}
+
+.login-card__descricao {
+    margin: 8px 0 0;
     color: var(--texto-suave);
+    font-size: 0.89rem;
+    line-height: 1.45;
 }
 
-.rodape--simples {
+/* ==========================================================
+   FORMULÁRIO
+   ========================================================== */
+
+.login-form {
+    display: grid;
+    gap: 20px;
+}
+
+.campo {
+    display: grid;
+    gap: 8px;
+}
+
+.campo label {
+    color: var(--azul);
+    font-size: 0.87rem;
+    font-weight: 700;
+}
+
+.campo__entrada {
+    display: flex;
+    align-items: center;
+    min-height: 53px;
+    overflow: hidden;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.campo__entrada:focus-within {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(23, 53, 87, 0.15);
+}
+
+.campo__icone {
+    display: grid;
+    align-self: stretch;
+    width: 49px;
+    color: var(--azul);
+    font-size: 1rem;
+    font-weight: 800;
+    background: var(--azul-claro);
+    border-right: 1px solid var(--borda);
+    place-items: center;
+}
+
+.campo input {
     width: 100%;
-    max-width: 420px;
-    margin-top: 24px;
+    min-width: 0;
+    height: 51px;
+    padding: 0 14px;
+    color: var(--azul);
+    font: inherit;
+    font-size: 0.94rem;
     background: transparent;
-    border-top: 0;
+    border: 0;
+    outline: 0;
+}
+
+.campo input::placeholder {
+    color: #8295a3;
+}
+
+/* ==========================================================
+   BOTÃO
+   ========================================================== */
+
+.botao-login {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 54px;
+    margin-top: 7px;
+    padding: 0 20px;
     color: var(--branco);
+    font: inherit;
+    font-size: 0.96rem;
+    font-weight: 800;
+    cursor: pointer;
+    background: var(--vermelho);
+    border: 0;
+    border-bottom: 3px solid var(--vermelho-escuro);
+    border-radius: 8px;
+    box-shadow: 0 5px 12px rgba(213, 19, 23, 0.24);
+    transition:
+        background 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.botao-login:hover {
+    background: #e81b20;
+    box-shadow: 0 8px 18px rgba(213, 19, 23, 0.30);
+    transform: translateY(-1px);
+}
+
+.botao-login:active {
+    border-bottom-width: 1px;
+    transform: translateY(1px);
+}
+
+.botao-login:focus-visible {
+    outline: 3px solid rgba(183, 214, 228, 0.90);
+    outline-offset: 3px;
+}
+
+.botao-login__seta {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+/* ==========================================================
+   ALERTAS
+   ========================================================== */
+
+.alerta {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.alerta--erro {
+    color: var(--erro-texto);
+    background: var(--erro-fundo);
+    border: 1px solid var(--erro-borda);
+}
+
+.alerta--sucesso {
+    color: var(--azul);
+    background: #edf6fa;
+    border: 1px solid var(--azul-claro);
+}
+
+/* ==========================================================
+   RODAPÉ
+   ========================================================== */
+
+.rodape-login {
+    position: relative;
+    z-index: 1;
+    padding: 18px 20px 25px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.78rem;
     text-align: center;
 }
 
-/* =====================================================
-   RESPONSIVIDADE
-   ===================================================== */
-
-@media (max-width: 1100px) {
-    .grid-equipamentos {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 700px) {
-    .topo {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .conteudo {
-        width: min(100% - 32px, 1180px);
-        padding: 24px 0;
-    }
-
-    .boas-vindas {
-        padding: 26px;
-    }
-
-    .atalhos {
-        grid-template-columns: 1fr;
-    }
-
-    .cabecalho-relatorio {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .cards-resumo {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 640px) {
-    .painel,
-    .painel-form {
-        padding: 20px;
-    }
-
-    .form-grid--2-colunas,
-    .grid-equipamentos .form-grid--2-colunas {
-        grid-template-columns: 1fr;
-    }
-
-    .form-acoes,
-    .acoes-formulario {
-        flex-direction: column;
-    }
-
-    .botao--primario {
-        width: 100%;
-    }
-}
-.acoes-tabela {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-width: 150px;
-}
-
-.form-excluir {
-    display: inline;
+.rodape-login p {
     margin: 0;
 }
 
-.botao--excluir {
-    padding: 7px 10px;
-    background: #fee2e2;
-    border: 1px solid #fecaca;
-    border-radius: 5px;
-    color: #b91c1c;
-    cursor: pointer;
-    font-size: 0.82rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
+/* ==========================================================
+   RESPONSIVIDADE
+   ========================================================== */
 
-.botao--excluir:hover {
-    background: #fecaca;
+@media (max-width: 560px) {
+    .cabecalho-login {
+        min-height: 104px;
+        padding: 16px 18px 21px;
+    }
+
+    .logo-sms {
+        max-height: 62px;
+    }
+
+    .formulario-login {
+        width: min(100% - 28px, 465px);
+        padding: 29px 0;
+    }
+
+    .login-card {
+        padding: 28px 21px 27px;
+        border-radius: 12px;
+    }
+
+    .login-card__marca {
+        margin-bottom: 16px;
+    }
+
+    .logo-prefeitura {
+        width: 102px;
+        height: 102px;
+    }
+
+    .login-card__titulo {
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+    }
+
+    .login-card h1 {
+        font-size: 1.36rem;
+    }
+
+    .login-card__descricao {
+        font-size: 0.83rem;
+    }
 }

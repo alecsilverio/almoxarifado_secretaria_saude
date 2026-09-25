@@ -4,6 +4,20 @@
 
 PRAGMA foreign_keys = ON;
 
+CREATE TABLE IF NOT EXISTS usuarios (
+    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    senha_hash TEXT NOT NULL,
+    papel TEXT NOT NULL DEFAULT 'administrador',
+    ativo INTEGER NOT NULL DEFAULT 1,
+    primeiro_acesso INTEGER NOT NULL DEFAULT 1,
+    criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_usuarios_email
+ON usuarios (email);
+
 -- Tabela de Unidades
 CREATE TABLE IF NOT EXISTS unidades (
     id_unidade INTEGER PRIMARY KEY AUTOINCREMENT,

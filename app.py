@@ -24,6 +24,10 @@ from flask import (
     url_for,
 )
 
+from werkzeug.security import (
+    check_password_hash,
+    generate_password_hash,
+)
 
 # =========================================================
 # CONFIGURAÇÕES
@@ -68,47 +72,152 @@ def login_required(f):
 
     return decorated_function
 
+def administrador_principal_required(f):
+    """Permite acesso apenas ao administrador principal."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in"):
+            flash("Você precisa fazer login para acessar esta página.", "erro")
+            return redirect(url_for("login"))
+
+        if session.get("papel_usuario") != "administrador_principal":
+            flash(
+                "Somente o administrador principal pode gerenciar usuários.",
+                "erro",
+            )
+            return redirect(url_for("index"))
+
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Tela de login do administrador."""
+    """Tela de login dos usuários do sistema."""
 
-    # Se já estiver logado, não precisa voltar à tela de login.
     if session.get("logged_in"):
         return redirect(url_for("index"))
 
     erro = None
 
     if request.method == "POST":
-        usuario = request.form.get("usuario", "").strip()
+        email = request.form.get("usuario", "").strip().lower()
         senha = request.form.get("senha", "")
 
-        if not usuario or not senha:
-            erro = "Informe o usuário e a senha."
-
-        elif usuario == ADMIN_USER and senha == ADMIN_PASS:
-            # Limpa uma sessão antiga antes de criar uma nova.
-            session.clear()
-
-            session["logged_in"] = True
-            session["usuario"] = usuario
-            session.permanent = True
-
-            flash("Login realizado com sucesso!", "sucesso")
-
-            # Retorna para a página que a pessoa tentou abrir antes do login.
-            proxima_pagina = request.args.get("next")
-
-            # Aceita somente caminhos internos para evitar redirecionamento externo.
-            if proxima_pagina and proxima_pagina.startswith("/"):
-                return redirect(proxima_pagina)
-
-            return redirect(url_for("index"))
+        if not email or not senha:
+            erro = "Informe o e-mail institucional e a senha."
 
         else:
-            erro = "Usuário ou senha inválidos."
+            with get_db_connection() as conn:
+                usuario = conn.execute(
+                    """
+                    SELECT *
+                    FROM usuarios
+                    WHERE email = ?
+                    """,
+                    (email,),
+                ).fetchone()
+
+            if usuario is None:
+                erro = "E-mail ou senha inválidos."
+
+            elif not usuario["ativo"]:
+                erro = "Este usuário está desativado. Procure o administrador principal."
+
+            elif not check_password_hash(usuario["senha_hash"], senha):
+                erro = "E-mail ou senha inválidos."
+
+            else:
+                session.clear()
+                session["logged_in"] = True
+                session["id_usuario"] = usuario["id_usuario"]
+                session["nome_usuario"] = usuario["nome"]
+                session["email_usuario"] = usuario["email"]
+                session["papel_usuario"] = usuario["papel"]
+                session.permanent = True
+
+                flash(f"Bem-vindo(a), {usuario['nome']}!", "sucesso")
+
+                proxima_pagina = request.args.get("next")
+
+                if proxima_pagina and proxima_pagina.startswith("/"):
+                    return redirect(proxima_pagina)
+
+                return redirect(url_for("index"))
 
     return render_template("login.html", erro=erro)
+
+def criar_usuarios_iniciais():
+    """
+    Cria os três usuários institucionais apenas se ainda não existirem.
+
+    Troque as senhas temporárias antes de rodar em apresentação ou uso real.
+    Cada pessoa deve trocar sua senha no primeiro acesso.
+    """
+
+    usuarios_iniciais = [
+        {
+            "nome": "Alexandre Silvério Damião dos Santos",
+            "email": "alexandre.silverio@treslagoas.ms.gov.br",
+            "senha": os.environ.get(
+                "SENHA_INICIAL_ALEXANDRE",
+                "Trocar@2026Alexandre"
+            ),
+            "papel": "administrador_principal",
+        },
+        {
+            "nome": "Márcio Alan Martins",
+            "email": "marcio.martins@treslagoas.ms.gov.br",
+            "senha": os.environ.get(
+                "SENHA_INICIAL_MARCIO",
+                "Trocar@2026Marcio"
+            ),
+            "papel": "administrador",
+        },
+        {
+            "nome": "Alessandra Bruski de Oliveira de Paula",
+            "email": "alessandra.paula@treslagoas.ms.gov.br",
+            "senha": os.environ.get(
+                "SENHA_INICIAL_ALESSANDRA",
+                "Trocar@2026Alessandra"
+            ),
+            "papel": "administrador",
+        },
+    ]
+
+    with get_db_connection() as conn:
+        for usuario in usuarios_iniciais:
+            existe = conn.execute(
+                """
+                SELECT id_usuario
+                FROM usuarios
+                WHERE email = ?
+                """,
+                (usuario["email"],),
+            ).fetchone()
+
+            if existe is None:
+                conn.execute(
+                    """
+                    INSERT INTO usuarios
+                    (
+                        nome,
+                        email,
+                        senha_hash,
+                        papel,
+                        ativo,
+                        primeiro_acesso
+                    )
+                    VALUES (?, ?, ?, ?, 1, 1)
+                    """,
+                    (
+                        usuario["nome"],
+                        usuario["email"],
+                        generate_password_hash(usuario["senha"]),
+                        usuario["papel"],
+                    ),
+                )
 
 
 @app.route("/logout")
@@ -1537,7 +1646,45 @@ def atualizar_banco_unidades():
         conn.commit()
 
 
+
+def redefinir_senhas_iniciais():
+    """Redefine temporariamente as senhas dos três usuários institucionais."""
+
+    usuarios = [
+        (
+            "alexandre.silverio@treslagoas.ms.gov.br",
+            "Almox@Alexandre2026",
+        ),
+        (
+            "marcio.martins@treslagoas.ms.gov.br",
+            "Almox@Marcio2026",
+        ),
+        (
+            "alessandra.paula@treslagoas.ms.gov.br",
+            "Almox@Alessandra2026",
+        ),
+    ]
+
+    with get_db_connection() as conn:
+        for email, senha in usuarios:
+            conn.execute(
+                """
+                UPDATE usuarios
+                SET
+                    senha_hash = ?,
+                    ativo = 1,
+                    primeiro_acesso = 1
+                WHERE email = ?
+                """,
+                (
+                    generate_password_hash(senha),
+                    email,
+                ),
+            )
+
 if __name__ == "__main__":
     init_db()
     atualizar_banco_unidades()
+    criar_usuarios_iniciais()
+    redefinir_senhas_iniciais()
     app.run(debug=True)
