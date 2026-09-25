@@ -437,6 +437,71 @@ def editar_unidade(id_unidade):
         unidade=unidade
     )
 
+@app.route("/unidades/<int:id_unidade>/excluir", methods=["POST"])
+@login_required
+def excluir_unidade(id_unidade):
+    """Exclui uma unidade apenas quando não há registros vinculados."""
+
+    try:
+        with get_db_connection() as conn:
+            unidade = conn.execute(
+                """
+                SELECT id_unidade, codigo, nome
+                FROM unidades
+                WHERE id_unidade = ?
+                """,
+                (id_unidade,),
+            ).fetchone()
+
+            if unidade is None:
+                flash("Unidade não encontrada.", "erro")
+                return redirect(url_for("unidades"))
+
+            total_equipamentos = conn.execute(
+                """
+                SELECT COUNT(*) AS total
+                FROM equipamentos
+                WHERE id_unidade = ?
+                """,
+                (id_unidade,),
+            ).fetchone()["total"]
+
+            total_insumos = conn.execute(
+                """
+                SELECT COUNT(*) AS total
+                FROM insumos
+                WHERE id_unidade = ?
+                """,
+                (id_unidade,),
+            ).fetchone()["total"]
+
+            if total_equipamentos > 0 or total_insumos > 0:
+                flash(
+                    "Não é possível excluir esta unidade porque ela possui "
+                    f"{total_equipamentos} equipamento(s) e "
+                    f"{total_insumos} insumo(s) vinculados. "
+                    "Edite ou exclua esses registros antes de excluir a unidade.",
+                    "erro",
+                )
+                return redirect(url_for("unidades"))
+
+            conn.execute(
+                """
+                DELETE FROM unidades
+                WHERE id_unidade = ?
+                """,
+                (id_unidade,),
+            )
+
+        flash("Unidade excluída com sucesso!", "sucesso")
+
+    except sqlite3.Error as erro_banco:
+        flash(
+            f"Não foi possível excluir a unidade: {erro_banco}",
+            "erro",
+        )
+
+    return redirect(url_for("unidades"))
 # =========================================================
 # EQUIPAMENTOS
 # =========================================================
@@ -683,6 +748,44 @@ def editar_equipamento(id_equipamento):
         equipamento=equipamento,
         unidades=lista_unidades,
     )
+
+@app.route("/equipamentos/<int:id_equipamento>/excluir", methods=["POST"])
+@login_required
+def excluir_equipamento(id_equipamento):
+    """Exclui um equipamento cadastrado."""
+
+    try:
+        with get_db_connection() as conn:
+            equipamento = conn.execute(
+                """
+                SELECT id_equipamento, nome, patrimonio
+                FROM equipamentos
+                WHERE id_equipamento = ?
+                """,
+                (id_equipamento,),
+            ).fetchone()
+
+            if equipamento is None:
+                flash("Equipamento não encontrado.", "erro")
+                return redirect(url_for("equipamentos"))
+
+            conn.execute(
+                """
+                DELETE FROM equipamentos
+                WHERE id_equipamento = ?
+                """,
+                (id_equipamento,),
+            )
+
+        flash("Equipamento excluído com sucesso!", "sucesso")
+
+    except sqlite3.Error as erro_banco:
+        flash(
+            f"Não foi possível excluir o equipamento: {erro_banco}",
+            "erro",
+        )
+
+    return redirect(url_for("equipamentos"))
 
 # =========================================================
 # INSUMOS
@@ -1027,6 +1130,44 @@ def editar_insumo(id_insumo):
         insumo=insumo,
         unidades=lista_unidades,
     )
+
+@app.route("/insumos/<int:id_insumo>/excluir", methods=["POST"])
+@login_required
+def excluir_insumo(id_insumo):
+    """Exclui um insumo cadastrado."""
+
+    try:
+        with get_db_connection() as conn:
+            insumo = conn.execute(
+                """
+                SELECT id_insumo, modelo, marca
+                FROM insumos
+                WHERE id_insumo = ?
+                """,
+                (id_insumo,),
+            ).fetchone()
+
+            if insumo is None:
+                flash("Insumo não encontrado.", "erro")
+                return redirect(url_for("insumos"))
+
+            conn.execute(
+                """
+                DELETE FROM insumos
+                WHERE id_insumo = ?
+                """,
+                (id_insumo,),
+            )
+
+        flash("Insumo excluído com sucesso!", "sucesso")
+
+    except sqlite3.Error as erro_banco:
+        flash(
+            f"Não foi possível excluir o insumo: {erro_banco}",
+            "erro",
+        )
+
+    return redirect(url_for("insumos"))
 
 # =========================================================
 # EXECUÇÃO LOCAL

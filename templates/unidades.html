@@ -189,14 +189,25 @@
 
                                 <td>{{ unidade['endereco'] or '-' }}</td>
 
-                                <td>
+                                <td class="acoes-tabela">
                                     <a
                                         class="botao botao--editar"
                                         href="{{ url_for('editar_unidade', id_unidade=unidade['id_unidade']) }}"
                                     >
                                         Editar
                                     </a>
-                                </td>
+
+                                    <form
+                                        method="post"
+                                        action="{{ url_for('excluir_unidade', id_unidade=unidade['id_unidade']) }}"
+                                        class="form-excluir"
+                                        onsubmit="return confirm('Excluir esta unidade? Esta ação não pode ser desfeita.');"
+                                        >
+                                    <button class="botao botao--excluir" type="submit">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="form-campo">
-                    <label for="modelo">Modelo</label>
+                    <label for="modelo">Modelo *</label>
                     <input
                         type="text"
                         id="modelo"
@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="form-campo">
-                    <label for="marca">Marca</label>
+                    <label for="marca">Marca *</label>
                     <input
                         type="text"
                         id="marca"
@@ -152,6 +152,7 @@
                             <th>Localização</th>
                             <th>Observação</th>
                             <th>Ações</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for insumo in insumos %}
@@ -163,7 +164,7 @@
                                 <td>{{ insumo['quantidade'] }}</td>
                                 <td>
                                     {% if insumo['vencimento'] %}
-                                        <span class="status-vencimento {% if insumo['vencimento'] < '2026-09-26' %}status-vencido{% elif insumo['vencimento'] < '2026-12-26' %}status-proximo{% else %}status-valido{% endif %}">
+                                        <span class="status-vencimento {% if insumo['status_vencimento'] == 'vencido' %}status-vencido{% elif insumo['status_vencimento'] == 'proximo_vencimento' %}status-proximo{% else %}status-valido{% endif %}">
                                             {{ insumo['vencimento'] }}
                                         </span>
                                     {% else %}
@@ -172,13 +173,24 @@
                                 </td>
                                 <td>{{ insumo['localizacao'] or '-' }}</td>
                                 <td>{{ insumo['observacao'] or '-' }}</td>
-                                <td>
+                                <td class="acoes-tabela">
                                     <a
                                         class="botao botao--editar"
                                         href="{{ url_for('editar_insumo', id_insumo=insumo['id_insumo']) }}"
                                     >
                                         Editar
                                     </a>
+
+                                    <form
+                                        method="post"
+                                        action="{{ url_for('excluir_insumo', id_insumo=insumo['id_insumo']) }}"
+                                        class="form-excluir"
+                                        onsubmit="return confirm('Excluir este insumo? Esta ação não pode ser desfeita.');"
+                                    >
+                                        <button class="botao botao--excluir" type="submit">
+                                            Excluir
+                                        </button>
+                                    </form>
                                 </td>
                                 
                             </tr>

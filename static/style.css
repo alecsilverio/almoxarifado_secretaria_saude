@@ -716,3 +716,30 @@ tbody tr:hover {
         width: 100%;
     }
 }
+.acoes-tabela {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 150px;
+}
+
+.form-excluir {
+    display: inline;
+    margin: 0;
+}
+
+.botao--excluir {
+    padding: 7px 10px;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 5px;
+    color: #b91c1c;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.botao--excluir:hover {
+    background: #fecaca;
+}
