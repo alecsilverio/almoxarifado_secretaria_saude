@@ -156,10 +156,10 @@
                 </option>
 
                 <option
-                    value="clinica_fisioterapia"
-                    {% if unidade['tipo_unidade'] == 'clinica_fisioterapia' %}selected{% endif %}
+                    value="clinica"
+                    {% if unidade['tipo_unidade'] in ['clinica', 'clinica_fisioterapia'] %}selected{% endif %}
                 >
-                    Clínica de Fisioterapia
+                    Clínica
                 </option>
 
                 <option
