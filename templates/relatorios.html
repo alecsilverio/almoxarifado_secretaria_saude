@@ -3,6 +3,37 @@
 {% block title %}Relatórios | Almoxarifado{% endblock %}
 
 {% block content %}
+
+{% set grupos_rede = {
+    'atencao_basica': 'Atenção Básica',
+    'urgencia_emergencia': 'Urgência e Emergência',
+    'especialidades': 'Especialidades e Clínicas',
+    'centros_especialidades_clinicas': 'Centros de Especialidades e Clínicas',
+    'saude_mental': 'Saúde Mental',
+    'programas_suporte': 'Programas e Suporte',
+    'sistema_prisional': 'Sistema Prisional',
+    'administracao': 'Administração',
+    'outro': 'Outro'
+} %}
+
+{% set tipos_unidade = {
+    'ubs': 'UBS',
+    'usf': 'USF',
+    'upa': 'UPA',
+    'caps': 'CAPS',
+    'samu': 'SAMU',
+    'sad': 'SAD',
+    'ist': 'IST',
+    'ambulatorio_saude_mental': 'Ambulatório de Saúde Mental',
+    'centro_especialidades': 'Centro de Especialidades',
+    'clinica': 'Clínica',
+    'clinica_fisioterapia': 'Clínica',
+    'secretaria_saude': 'Secretaria de Saúde',
+    'penitenciaria_seguranca_media': 'Penitenciária de Segurança Média',
+    'estabelecimento_penal_feminino': 'Estabelecimento Penal Feminino',
+    'colonia_penal': 'Colônia Penal',
+    'outro': 'Outro'
+} %}
 <section class="cabecalho-pagina">
     <div>
         <p class="texto-superior texto-superior--azul">RELATÓRIOS</p>
@@ -64,7 +95,8 @@
                 <tr>
                     <th>Código</th>
                     <th>Unidade</th>
-                    <th>Tipo</th>
+                    <th>Grupo da rede</th>
+                    <th>Tipo de unidade</th>
                     <th>Endereço</th>
                     <th>Equipamentos</th>
                     <th>Insumos</th>
@@ -74,13 +106,30 @@
             <tbody>
                 {% for unidade in relatorio_unidades %}
                 <tr>
-                    <td><strong>{{ unidade["codigo"] }}</strong></td>
-                    <td>{{ unidade["nome"] }}</td>
-                    <td>{{ unidade["tipo"] or "-" }}</td>
-                    <td>{{ unidade["endereco"] or "-" }}</td>
-                    <td>{{ unidade["total_equipamentos"] }}</td>
-                    <td>{{ unidade["total_insumos"] }}</td>
-                </tr>
+    <td><strong>{{ unidade["codigo"] }}</strong></td>
+
+    <td>{{ unidade["nome"] }}</td>
+
+    <td>
+        {{ grupos_rede.get(
+            unidade["grupo_rede"],
+            unidade["grupo_rede"] or "-"
+        ) }}
+    </td>
+
+    <td>
+        {{ tipos_unidade.get(
+            unidade["tipo_unidade"],
+            unidade["tipo_unidade"] or "-"
+        ) }}
+    </td>
+
+    <td>{{ unidade["endereco"] or "-" }}</td>
+
+    <td>{{ unidade["total_equipamentos"] }}</td>
+
+    <td>{{ unidade["total_insumos"] }}</td>
+</tr>
                 {% else %}
                 <tr>
                     <td colspan="6" class="sem-registros">

@@ -320,10 +320,10 @@ def unidades():
                 SELECT *
                 FROM unidades
                 WHERE codigo LIKE ?
-                   OR nome LIKE ?
-                   OR grupo_rede LIKE ?
-                   OR tipo_unidade LIKE ?
-                   OR endereco LIKE ?
+                OR nome LIKE ?
+                OR grupo_rede LIKE ?
+                OR tipo_unidade LIKE ?
+                OR endereco LIKE ?
                 ORDER BY nome
             """, (
                 termo,
@@ -1044,7 +1044,8 @@ def relatorios():
                 u.id_unidade,
                 u.codigo,
                 u.nome,
-                u.tipo,
+                u.grupo_rede,
+                u.tipo_unidade,
                 u.endereco,
                 COUNT(DISTINCT e.id_equipamento) AS total_equipamentos,
                 COUNT(DISTINCT i.id_insumo) AS total_insumos
@@ -1057,10 +1058,11 @@ def relatorios():
                 u.id_unidade,
                 u.codigo,
                 u.nome,
-                u.tipo,
+                u.grupo_rede,
+                u.tipo_unidade,
                 u.endereco
             ORDER BY u.nome
-            """
+            """ 
         ).fetchall()
 
         relatorio_equipamentos = conn.execute(
@@ -1165,49 +1167,53 @@ def relatorio_unidades_csv():
 
     with get_db_connection() as conn:
         unidades = conn.execute(
-            """
-            SELECT
-                u.codigo,
-                u.nome,
-                u.tipo,
-                u.endereco,
-                COUNT(DISTINCT e.id_equipamento) AS total_equipamentos,
-                COUNT(DISTINCT i.id_insumo) AS total_insumos
-            FROM unidades u
-            LEFT JOIN equipamentos e
-                ON e.id_unidade = u.id_unidade
-            LEFT JOIN insumos i
-                ON i.id_unidade = u.id_unidade
-            GROUP BY
-                u.id_unidade,
-                u.codigo,
-                u.nome,
-                u.tipo,
-                u.endereco
-            ORDER BY u.nome
-            """
-        ).fetchall()
+    """
+    SELECT
+        u.codigo,
+        u.nome,
+        u.grupo_rede,
+        u.tipo_unidade,
+        u.endereco,
+        COUNT(DISTINCT e.id_equipamento) AS total_equipamentos,
+        COUNT(DISTINCT i.id_insumo) AS total_insumos
+    FROM unidades u
+    LEFT JOIN equipamentos e
+        ON e.id_unidade = u.id_unidade
+    LEFT JOIN insumos i
+        ON i.id_unidade = u.id_unidade
+    GROUP BY
+        u.id_unidade,
+        u.codigo,
+        u.nome,
+        u.grupo_rede,
+        u.tipo_unidade,
+        u.endereco
+    ORDER BY u.nome
+    """
+).fetchall()
 
     cabecalhos = [
-        "Código",
-        "Nome da unidade",
-        "Tipo",
-        "Endereço",
-        "Total de equipamentos",
-        "Total de insumos",
-    ]
+    "Código",
+    "Nome da unidade",
+    "Grupo da rede",
+    "Tipo de unidade",
+    "Endereço",
+    "Total de equipamentos",
+    "Total de insumos",
+]
 
     linhas = [
-        [
-            unidade["codigo"],
-            unidade["nome"],
-            unidade["tipo"],
-            unidade["endereco"],
-            unidade["total_equipamentos"],
-            unidade["total_insumos"],
-        ]
-        for unidade in unidades
+    [
+        unidade["codigo"],
+        unidade["nome"],
+        unidade["grupo_rede"] or "-",
+        unidade["tipo_unidade"] or "-",
+        unidade["endereco"] or "-",
+        unidade["total_equipamentos"],
+        unidade["total_insumos"],
     ]
+    for unidade in unidades
+]
 
     return gerar_csv(
         "relatorio_unidades.csv",
@@ -1389,11 +1395,6 @@ def atualizar_banco_unidades():
 
         conn.commit()
 
-
-if __name__ == "__main__":
-    init_db()
-    atualizar_banco_unidades()
-    app.run(debug=True)
 
 if __name__ == "__main__":
     init_db()
