@@ -3,34 +3,107 @@
 {% block title %}Início | Almoxarifado{% endblock %}
 
 {% block content %}
-<section class="boas-vindas">
-    <div>
-        <p class="texto-superior">PAINEL PRINCIPAL</p>
-        <h2>Controle de equipamentos e insumos</h2>
-        <p>
-            Centralize o acompanhamento do almoxarifado da Secretaria
-            e dos equipamentos distribuídos nas unidades de saúde.
-        </p>
-    </div>
-</section>
+<div class="dashboard">
 
-<section class="atalhos" aria-label="Acessos rápidos">
-    <a class="card" href="{{ url_for('unidades') }}">
-        <span class="card__icone">🏥</span>
-        <h3>Unidades</h3>
-        <p>Cadastre e consulte as unidades de saúde.</p>
-    </a>
+    <section class="boas-vindas">
+        <div class="boas-vindas__conteudo">
+            <p class="texto-superior">📊 PAINEL PRINCIPAL</p>
 
-    <a class="card" href="{{ url_for('equipamentos') }}">
-        <span class="card__icone">🩺</span>
-        <h3>Equipamentos</h3>
-        <p>Controle patrimônio, situação e localização dos equipamentos.</p>
-    </a>
+            <h2>Controle de equipamentos e insumos</h2>
 
-    <a class="card" href="{{ url_for('insumos') }}">
-        <span class="card__icone">📦</span>
-        <h3>Insumos</h3>
-        <p>Acompanhe quantidade, localização e vencimento dos materiais.</p>
-    </a>
-</section>
+            <p>
+                Centralize o acompanhamento do almoxarifado da Secretaria
+                Municipal de Saúde e dos equipamentos distribuídos nas
+                unidades de saúde.
+            </p>
+        </div>
+
+        <div class="boas-vindas__simbolo" aria-hidden="true">
+            📦
+        </div>
+    </section>
+
+    <section class="dashboard-info" aria-label="Resumo do sistema">
+        <div class="dashboard-info__texto">
+            <span class="dashboard-info__etiqueta">⚡ ACESSO RÁPIDO</span>
+
+            <h2>Gerencie o almoxarifado</h2>
+
+            <p>
+                Selecione uma área para cadastrar, consultar ou atualizar
+                as informações do sistema.
+            </p>
+        </div>
+
+        <div class="dashboard-info__linha" aria-hidden="true"></div>
+    </section>
+
+    <section class="atalhos" aria-label="Acessos rápidos">
+        <a class="card card--unidades" href="{{ url_for('unidades') }}">
+            <span class="card__icone" aria-hidden="true">🏥</span>
+
+            <span class="card__conteudo">
+                <span class="card__titulo">🏥 Unidades</span>
+
+                <span class="card__descricao">
+                    Cadastre e consulte as unidades de saúde.
+                </span>
+            </span>
+
+            <span class="card__seta" aria-hidden="true">→</span>
+        </a>
+
+        <a
+            class="card card--equipamentos"
+            href="{{ url_for('equipamentos') }}"
+        >
+            <span class="card__icone" aria-hidden="true">🩺</span>
+
+            <span class="card__conteudo">
+                <span class="card__titulo">🩺 Equipamentos</span>
+
+                <span class="card__descricao">
+                    Controle patrimônio, situação e localização dos equipamentos.
+                </span>
+            </span>
+
+            <span class="card__seta" aria-hidden="true">→</span>
+        </a>
+
+        <a class="card card--insumos" href="{{ url_for('insumos') }}">
+            <span class="card__icone" aria-hidden="true">📦</span>
+
+            <span class="card__conteudo">
+                <span class="card__titulo">📦 Insumos</span>
+
+                <span class="card__descricao">
+                    Acompanhe quantidade, localização e vencimento dos materiais.
+                </span>
+            </span>
+
+            <span class="card__seta" aria-hidden="true">→</span>
+        </a>
+    </section>
+
+    <section class="dashboard-acoes">
+        <div>
+            <span class="dashboard-acoes__etiqueta">
+                🏥 SISTEMA DE ALMOXARIFADO
+            </span>
+
+            <h2>Organização e controle em um só lugar</h2>
+        </div>
+
+        <div class="dashboard-acoes__botoes">
+            <a class="botao botao--primario" href="{{ url_for('unidades') }}">
+                🏥 Gerenciar unidades
+            </a>
+
+            <a class="botao botao--secundario" href="{{ url_for('relatorios') }}">
+                📊 Ver relatórios
+            </a>
+        </div>
+    </section>
+
+</div>
 {% endblock %}

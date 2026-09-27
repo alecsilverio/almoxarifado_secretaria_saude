@@ -46,31 +46,53 @@
 </section>
 
 <!-- Cards de resumo -->
-<section class="cards-resumo">
-    <article class="card-resumo">
-        <span class="rotulo">Unidades</span>
-        <strong>{{ resumo["total_unidades"] }}</strong>
+<section class="cards-resumo cards-resumo--colorido">
+
+    <article class="card-resumo card-resumo--unidades">
+        <span class="card-resumo__icone" aria-hidden="true">🏥</span>
+
+        <div class="card-resumo__conteudo">
+            <span class="rotulo">Unidades</span>
+            <strong>{{ resumo["total_unidades"] }}</strong>
+        </div>
     </article>
 
-    <article class="card-resumo">
-        <span class="rotulo">Equipamentos</span>
-        <strong>{{ resumo["total_equipamentos"] }}</strong>
+    <article class="card-resumo card-resumo--equipamentos">
+        <span class="card-resumo__icone" aria-hidden="true">🩺</span>
+
+        <div class="card-resumo__conteudo">
+            <span class="rotulo">Equipamentos</span>
+            <strong>{{ resumo["total_equipamentos"] }}</strong>
+        </div>
     </article>
 
-    <article class="card-resumo">
-        <span class="rotulo">Insumos</span>
-        <strong>{{ resumo["total_insumos"] }}</strong>
+    <article class="card-resumo card-resumo--insumos">
+        <span class="card-resumo__icone" aria-hidden="true">📦</span>
+
+        <div class="card-resumo__conteudo">
+            <span class="rotulo">Insumos</span>
+            <strong>{{ resumo["total_insumos"] }}</strong>
+        </div>
     </article>
 
-    <article class="card-resumo alerta">
-        <span class="rotulo">Insumos vencidos</span>
-        <strong>{{ resumo["total_vencidos"] }}</strong>
+    <article class="card-resumo card-resumo--vencidos">
+        <span class="card-resumo__icone" aria-hidden="true">!</span>
+
+        <div class="card-resumo__conteudo">
+            <span class="rotulo">Insumos vencidos</span>
+            <strong>{{ resumo["total_vencidos"] }}</strong>
+        </div>
     </article>
 
-    <article class="card-resumo aviso">
-        <span class="rotulo">Próximos do vencimento</span>
-        <strong>{{ resumo["total_proximos_vencimento"] }}</strong>
+    <article class="card-resumo card-resumo--proximos">
+        <span class="card-resumo__icone" aria-hidden="true">◷</span>
+
+        <div class="card-resumo__conteudo">
+            <span class="rotulo">Próximos do vencimento</span>
+            <strong>{{ resumo["total_proximos_vencimento"] }}</strong>
+        </div>
     </article>
+
 </section>
 
 <!-- Relatório de Unidades -->

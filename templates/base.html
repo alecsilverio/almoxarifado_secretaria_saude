@@ -3,47 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Almoxarifado | Secretaria de Saúde{% endblock %}</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    <title>
+        {% block title %}Almoxarifado | Secretaria Municipal de Saúde{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <link
+        rel="icon"
+        href="{{ url_for('static', filename='favicon.png') }}"
+        type="image/png"
+    >
 </head>
+
 <body>
     <header class="topo">
-    <div class="marca">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="marca__logo">
-        <div>
-            <h1>Almoxarifado</h1>
-            <p>Secretaria Municipal de Saúde</p>
+        <div class="topo__conteudo">
+
+            <a class="marca" href="{{ url_for('index') }}">
+                <img
+                    src="{{ url_for('static', filename='logo.png') }}"
+                    alt="Prefeitura de Três Lagoas"
+                    class="marca__logo"
+                >
+
+                <span class="marca__texto">
+                    <strong>Almoxarifado</strong>
+                    <small>Secretaria Municipal de Saúde</small>
+                </span>
+            </a>
+
+            <nav class="menu" aria-label="Menu principal">
+
+                <a
+                    class="menu__link {% if request.endpoint == 'index' %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('index') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">🏠</span>
+                    <span>Início</span>
+                </a>
+
+                <a
+                    class="menu__link {% if request.endpoint == 'unidades' %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('unidades') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">🏥</span>
+                    <span>Unidades</span>
+                </a>
+
+                <a
+                    class="menu__link {% if request.endpoint == 'equipamentos' %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('equipamentos') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">🩺</span>
+                    <span>Equipamentos</span>
+                </a>
+
+                <a
+                    class="menu__link {% if request.endpoint == 'insumos' %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('insumos') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">📦</span>
+                    <span>Insumos</span>
+                </a>
+
+                <a
+                    class="menu__link {% if request.endpoint == 'relatorios' %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('relatorios') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">📊</span>
+                    <span>Relatórios</span>
+                </a>
+
+                <span class="menu__divisor" aria-hidden="true"></span>
+
+                <a
+                    class="menu__link menu__link--sair"
+                    href="{{ url_for('logout') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">🚪</span>
+                    <span>Sair</span>
+                </a>
+
+            </nav>
+
         </div>
-    </div>
+    </header>
 
-    <nav class="menu" aria-label="Menu principal">
-        <a href="{{ url_for('index') }}">Início</a>
-        <a href="{{ url_for('unidades') }}">Unidades</a>
-        <a href="{{ url_for('equipamentos') }}">Equipamentos</a>
-        <a href="{{ url_for('insumos') }}">Insumos</a>
-        <a href="{{ url_for('relatorios') }}">Relatórios</a>
-        <a href="{{ url_for('logout') }}" style="margin-left: 12px; opacity: 0.9;"> Sair </a>
-    </nav>
-</header>
+    <main class="conteudo">
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, mensagem in mensagens %}
+                    <div class="alerta alerta--{{ categoria }}">
+                        {{ mensagem }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-<main class="conteudo">
-    {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-            {% for categoria, mensagem in mensagens %}
-                <div class="alerta alerta--{{ categoria }}">
-                    {{ mensagem }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    {% block content %}{% endblock %}
-</main>
+        {% block content %}{% endblock %}
+    </main>
 
     <footer class="rodape">
-        <p>Sistema de Controle de Almoxarifado — Secretaria Municipal de Saúde</p>
+        <p>
+            Sistema de Controle de Almoxarifado ·
+            Secretaria Municipal de Saúde · Três Lagoas/MS
+        </p>
     </footer>
 </body>
 </html>

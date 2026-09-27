@@ -1,10 +1,15 @@
 /* ==========================================================
-   LOGIN — SISTEMA DE CONTROLE DE ALMOXARIFADO
-   Prefeitura Municipal de Três Lagoas | SMS
+   SISTEMA DE CONTROLE DE ALMOXARIFADO
+   CSS COMPLETO — LOGIN + PÁGINAS INTERNAS
 
-   Azul institucional: #173557
-   Vermelho oficial:   #D51317
-   Azul claro:         #B7D6E4
+   Paleta oficial:
+   Azul:       #173557
+   Vermelho:   #D51317
+   Azul claro: #B7D6E4
+   ========================================================== */
+
+/* ==========================================================
+   1. VARIÁVEIS, RESET E BASE
    ========================================================== */
 
 :root {
@@ -12,18 +17,35 @@
     --azul-escuro: #102943;
     --azul-medio: #21476f;
     --azul-claro: #b7d6e4;
+    --azul-suave: #edf6fa;
+
     --vermelho: #d51317;
     --vermelho-escuro: #a80f13;
+    --vermelho-hover: #e81b20;
+
     --branco: #ffffff;
-    --texto-suave: #647583;
-    --borda: #d6e0e5;
-    --borda-clara: #e8eef1;
-    --erro-fundo: #fff1f1;
-    --erro-borda: #ecb5b6;
-    --erro-texto: #971519;
+    --fundo: #f3f6f8;
+    --texto: #23313d;
+    --texto-suave: #637482;
+
+    --borda: #d5e0e6;
+    --borda-clara: #e7eef2;
+
+    --sucesso: #227a4f;
+    --sucesso-fundo: #eaf8f0;
+
+    --aviso: #8c5b00;
+    --aviso-fundo: #fff6dc;
+
+    --erro: #a5161a;
+    --erro-fundo: #fff0f0;
+
+    --sombra: 0 6px 20px rgba(23, 53, 87, 0.10);
 }
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -32,14 +54,33 @@ html {
 }
 
 body {
-    margin: 0;
-}
-
-body.pagina-login {
     min-width: 320px;
     min-height: 100vh;
-    color: var(--azul);
+    margin: 0;
+    color: var(--texto);
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    background: var(--fundo);
+}
+
+a {
+    color: var(--azul);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--vermelho);
+}
+
+/* ==========================================================
+   2. LOGIN
+   O login funciona quando o HTML contém:
+   <body class="pagina-login">
+   ========================================================== */
+
+body.pagina-login {
+    color: var(--azul);
     background:
         radial-gradient(
             circle at 12% 20%,
@@ -67,8 +108,6 @@ body.pagina-login {
     overflow: hidden;
 }
 
-/* Linhas decorativas bem discretas no fundo azul */
-
 .container-login::before,
 .container-login::after {
     position: absolute;
@@ -93,9 +132,7 @@ body.pagina-login {
     height: 520px;
 }
 
-/* ==========================================================
-   TOPO — SMS
-   ========================================================== */
+/* Cabeçalho de login com logo da SMS */
 
 .cabecalho-login {
     position: relative;
@@ -133,9 +170,7 @@ body.pagina-login {
     object-fit: contain;
 }
 
-/* ==========================================================
-   ÁREA DO LOGIN
-   ========================================================== */
+/* Área central do login */
 
 .formulario-login {
     position: relative;
@@ -160,8 +195,6 @@ body.pagina-login {
         0 1px 0 rgba(255, 255, 255, 0.90) inset;
 }
 
-/* Faixa azul e vermelha no topo do cartão */
-
 .login-card::before {
     position: absolute;
     top: 0;
@@ -182,9 +215,7 @@ body.pagina-login {
     content: "";
 }
 
-/* ==========================================================
-   LOGO DA PREFEITURA
-   ========================================================== */
+/* Logo da Prefeitura dentro do cartão */
 
 .login-card__marca {
     display: flex;
@@ -200,9 +231,7 @@ body.pagina-login {
     border-radius: 8px;
 }
 
-/* ==========================================================
-   TÍTULO
-   ========================================================== */
+/* Títulos do login */
 
 .login-card__titulo {
     margin-bottom: 27px;
@@ -233,21 +262,19 @@ body.pagina-login {
     line-height: 1.45;
 }
 
-/* ==========================================================
-   FORMULÁRIO
-   ========================================================== */
+/* Formulário do login */
 
 .login-form {
     display: grid;
     gap: 20px;
 }
 
-.campo {
+.pagina-login .campo {
     display: grid;
     gap: 8px;
 }
 
-.campo label {
+.pagina-login .campo label {
     color: var(--azul);
     font-size: 0.87rem;
     font-weight: 700;
@@ -283,7 +310,7 @@ body.pagina-login {
     place-items: center;
 }
 
-.campo input {
+.pagina-login .campo input {
     width: 100%;
     min-width: 0;
     height: 51px;
@@ -296,13 +323,9 @@ body.pagina-login {
     outline: 0;
 }
 
-.campo input::placeholder {
+.pagina-login .campo input::placeholder {
     color: #8295a3;
 }
-
-/* ==========================================================
-   BOTÃO
-   ========================================================== */
 
 .botao-login {
     display: flex;
@@ -329,7 +352,7 @@ body.pagina-login {
 }
 
 .botao-login:hover {
-    background: #e81b20;
+    background: var(--vermelho-hover);
     box-shadow: 0 8px 18px rgba(213, 19, 23, 0.30);
     transform: translateY(-1px);
 }
@@ -349,11 +372,7 @@ body.pagina-login {
     line-height: 1;
 }
 
-/* ==========================================================
-   ALERTAS
-   ========================================================== */
-
-.alerta {
+.pagina-login .alerta {
     margin-bottom: 18px;
     padding: 12px 14px;
     border-radius: 8px;
@@ -361,21 +380,17 @@ body.pagina-login {
     line-height: 1.4;
 }
 
-.alerta--erro {
-    color: var(--erro-texto);
-    background: var(--erro-fundo);
-    border: 1px solid var(--erro-borda);
+.pagina-login .alerta--erro {
+    color: #971519;
+    background: #fff1f1;
+    border: 1px solid #ecb5b6;
 }
 
-.alerta--sucesso {
+.pagina-login .alerta--sucesso {
     color: var(--azul);
-    background: #edf6fa;
+    background: var(--azul-suave);
     border: 1px solid var(--azul-claro);
 }
-
-/* ==========================================================
-   RODAPÉ
-   ========================================================== */
 
 .rodape-login {
     position: relative;
@@ -391,8 +406,659 @@ body.pagina-login {
 }
 
 /* ==========================================================
-   RESPONSIVIDADE
+   3. PÁGINAS INTERNAS — CABEÇALHO E MENU
    ========================================================== */
+
+.cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--branco);
+    border-bottom: 1px solid var(--borda);
+    box-shadow: 0 2px 8px rgba(23, 53, 87, 0.07);
+}
+
+.cabecalho::after {
+    display: block;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        var(--azul) 0%,
+        var(--azul) 77%,
+        var(--vermelho) 77%,
+        var(--vermelho) 100%
+    );
+    content: "";
+}
+
+.cabecalho__conteudo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(100% - 48px, 1240px);
+    min-height: 82px;
+    margin: 0 auto;
+    gap: 25px;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 13px;
+}
+
+.marca__logo {
+    display: block;
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.marca__texto {
+    min-width: 0;
+}
+
+.marca__texto h1,
+.marca h1 {
+    margin: 0;
+    color: var(--azul);
+    font-size: 1.2rem;
+    line-height: 1.15;
+}
+
+.marca__texto p,
+.marca p {
+    margin: 4px 0 0;
+    color: var(--texto-suave);
+    font-size: 0.76rem;
+    line-height: 1.35;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+}
+
+.menu__lista {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    gap: 4px;
+}
+
+.menu__link {
+    display: block;
+    padding: 10px 11px;
+    color: var(--azul);
+    font-size: 0.86rem;
+    font-weight: 700;
+    border-radius: 6px;
+    transition: background 160ms ease, color 160ms ease;
+}
+
+.menu__link:hover,
+.menu__link--ativo {
+    color: var(--branco);
+    background: var(--azul);
+}
+
+.menu__link--sair {
+    color: var(--vermelho);
+}
+
+.menu__link--sair:hover {
+    color: var(--branco);
+    background: var(--vermelho);
+}
+
+/* Serve se seu menu for apenas <nav><a>...</a></nav> */
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+nav a {
+    display: block;
+    padding: 9px 10px;
+    color: var(--azul);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+nav a:hover {
+    color: var(--branco);
+    background: var(--azul);
+}
+
+/* ==========================================================
+   4. CONTEÚDO, TÍTULOS E CARTÕES
+   ========================================================== */
+
+.conteudo,
+.container,
+main.conteudo {
+    width: min(100% - 48px, 1240px);
+    margin: 0 auto;
+}
+
+.conteudo {
+    padding: 32px 0 48px;
+}
+
+.pagina__cabecalho,
+.cabecalho-pagina {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 18px;
+}
+
+.pagina__titulo,
+.cabecalho-pagina h2,
+.conteudo > h2,
+main h2 {
+    margin: 0;
+    color: var(--azul);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.2;
+}
+
+.pagina__descricao,
+.cabecalho-pagina p,
+.conteudo > p {
+    margin: 7px 0 0;
+    color: var(--texto-suave);
+}
+
+.cartao,
+.secao,
+.card,
+.conteudo > section {
+    margin-bottom: 24px;
+    padding: 24px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    box-shadow: var(--sombra);
+}
+
+.cartao h2,
+.cartao h3,
+.secao h2,
+.secao h3,
+.card h2,
+.card h3,
+.conteudo > section h2,
+.conteudo > section h3 {
+    margin-top: 0;
+    color: var(--azul);
+}
+
+.cartao > p:first-of-type,
+.secao > p:first-of-type,
+.card > p:first-of-type,
+.conteudo > section > p:first-of-type {
+    color: var(--texto-suave);
+}
+
+/* ==========================================================
+   5. FORMULÁRIOS DAS PÁGINAS INTERNAS
+   ========================================================== */
+
+form {
+    margin: 0;
+}
+
+.formulario,
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.campo {
+    display: grid;
+    gap: 7px;
+}
+
+.campo--largo,
+.campo--full {
+    grid-column: 1 / -1;
+}
+
+label {
+    color: var(--azul);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    color: var(--texto);
+    font: inherit;
+    font-size: 0.92rem;
+    background: var(--branco);
+    border: 1px solid #bfcfd8;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(23, 53, 87, 0.14);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #8999a4;
+}
+
+/* ==========================================================
+   6. BOTÕES
+   ========================================================== */
+
+.botao,
+button,
+input[type="submit"],
+input[type="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    color: var(--branco);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--azul);
+    border: 1px solid var(--azul);
+    border-bottom: 3px solid var(--azul-escuro);
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(23, 53, 87, 0.14);
+    transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.botao:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    color: var(--branco);
+    background: var(--azul-medio);
+    box-shadow: 0 5px 10px rgba(23, 53, 87, 0.17);
+    transform: translateY(-1px);
+}
+
+.botao:active,
+button:active,
+input[type="submit"]:active,
+input[type="button"]:active {
+    border-bottom-width: 1px;
+    transform: translateY(1px);
+}
+
+.botao--primario {
+    color: var(--branco);
+    background: var(--azul);
+    border-color: var(--azul);
+    border-bottom-color: var(--azul-escuro);
+}
+
+.botao--secundario {
+    color: var(--azul);
+    background: var(--branco);
+    border-color: var(--azul);
+    border-bottom-color: var(--azul);
+}
+
+.botao--secundario:hover {
+    color: var(--branco);
+    background: var(--azul);
+}
+
+.botao--perigo,
+.botao--excluir {
+    color: var(--branco);
+    background: var(--vermelho);
+    border-color: var(--vermelho);
+    border-bottom-color: var(--vermelho-escuro);
+}
+
+.botao--perigo:hover,
+.botao--excluir:hover {
+    color: var(--branco);
+    background: var(--vermelho-hover);
+}
+
+.acoes,
+.grupo-botoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+}
+
+/* ==========================================================
+   7. TABELAS
+   ========================================================== */
+
+.tabela-responsiva {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    background: var(--branco);
+}
+
+.tabela {
+    min-width: 720px;
+}
+
+thead {
+    background: var(--azul);
+}
+
+th {
+    padding: 12px 13px;
+    color: var(--branco);
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.25;
+    text-align: left;
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 13px;
+    color: var(--texto);
+    font-size: 0.86rem;
+    line-height: 1.35;
+    vertical-align: top;
+    border-top: 1px solid var(--borda-clara);
+}
+
+tbody tr:nth-child(even) {
+    background: #f8fafb;
+}
+
+tbody tr:hover {
+    background: var(--azul-suave);
+}
+
+td a {
+    font-weight: 700;
+}
+
+td .botao,
+td button {
+    min-height: 33px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+}
+
+/* ==========================================================
+   8. ALERTAS, STATUS E RESUMOS
+   ========================================================== */
+
+.alerta,
+.mensagem {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.alerta--erro,
+.alerta.erro,
+.mensagem--erro {
+    color: var(--erro);
+    background: var(--erro-fundo);
+    border-color: #edb7b9;
+}
+
+.alerta--sucesso,
+.alerta.sucesso,
+.mensagem--sucesso {
+    color: var(--sucesso);
+    background: var(--sucesso-fundo);
+    border-color: #b6e2c8;
+}
+
+.alerta--aviso,
+.alerta.aviso,
+.mensagem--aviso {
+    color: var(--aviso);
+    background: var(--aviso-fundo);
+    border-color: #efd58a;
+}
+
+.alerta--info,
+.mensagem--info {
+    color: var(--azul);
+    background: var(--azul-suave);
+    border-color: var(--azul-claro);
+}
+
+.badge,
+.status,
+.etiqueta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 8px;
+    color: var(--azul);
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    background: var(--azul-suave);
+    border: 1px solid var(--azul-claro);
+    border-radius: 999px;
+}
+
+.badge--ativo,
+.status--ativo,
+.status--disponivel {
+    color: var(--sucesso);
+    background: var(--sucesso-fundo);
+    border-color: #b6e2c8;
+}
+
+.badge--inativo,
+.status--inativo,
+.status--indisponivel {
+    color: var(--erro);
+    background: var(--erro-fundo);
+    border-color: #edb7b9;
+}
+
+.resumo,
+.cards-resumo {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 25px;
+    gap: 16px;
+}
+
+.resumo__item,
+.card-resumo {
+    padding: 19px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-left: 5px solid var(--azul);
+    border-radius: 8px;
+    box-shadow: 0 3px 12px rgba(23, 53, 87, 0.07);
+}
+
+.resumo__item--vermelho,
+.card-resumo--vermelho {
+    border-left-color: var(--vermelho);
+}
+
+.resumo__rotulo,
+.card-resumo__rotulo {
+    display: block;
+    color: var(--texto-suave);
+    font-size: 0.77rem;
+    font-weight: 700;
+}
+
+.resumo__valor,
+.card-resumo__valor {
+    display: block;
+    margin-top: 5px;
+    color: var(--azul);
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* ==========================================================
+   9. RODAPÉ
+   ========================================================== */
+
+.rodape {
+    margin-top: auto;
+    padding: 20px;
+    color: var(--texto-suave);
+    font-size: 0.78rem;
+    text-align: center;
+    background: var(--branco);
+    border-top: 1px solid var(--borda);
+}
+
+.rodape p {
+    margin: 0;
+}
+
+/* ==========================================================
+   10. RESPONSIVIDADE
+   ========================================================== */
+
+@media (max-width: 980px) {
+    .cabecalho__conteudo {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 15px 0;
+        gap: 12px;
+    }
+
+    .menu__lista {
+        flex-wrap: wrap;
+    }
+
+    .resumo,
+    .cards-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    body {
+        font-size: 14px;
+    }
+
+    .cabecalho__conteudo,
+    .conteudo,
+    .container,
+    main.conteudo {
+        width: min(100% - 28px, 1240px);
+    }
+
+    .conteudo {
+        padding: 24px 0 36px;
+    }
+
+    .marca__logo {
+        width: 41px;
+        height: 41px;
+    }
+
+    .marca__texto h1,
+    .marca h1 {
+        font-size: 1.02rem;
+    }
+
+    .marca__texto p,
+    .marca p {
+        font-size: 0.68rem;
+    }
+
+    .menu__link,
+    nav a {
+        padding: 8px 9px;
+        font-size: 0.78rem;
+    }
+
+    .pagina__cabecalho,
+    .cabecalho-pagina {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cartao,
+    .secao,
+    .card,
+    .conteudo > section {
+        padding: 18px;
+        border-radius: 8px;
+    }
+
+    .formulario,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .campo--largo,
+    .campo--full {
+        grid-column: auto;
+    }
+
+    .resumo,
+    .cards-resumo {
+        grid-template-columns: 1fr;
+    }
+
+    th,
+    td {
+        padding: 10px;
+    }
+
+    .rodape {
+        padding: 17px 14px;
+    }
+}
 
 @media (max-width: 560px) {
     .cabecalho-login {
@@ -434,5 +1100,684 @@ body.pagina-login {
 
     .login-card__descricao {
         font-size: 0.83rem;
+    }
+}
+
+/* ==========================================================
+   DASHBOARD — PÁGINA INICIAL
+   Classes usadas em templates/index.html
+   ========================================================== */
+
+.dashboard {
+    display: grid;
+    gap: 24px;
+}
+
+/* Painel principal */
+
+.boas-vindas {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 172px;
+    padding: 32px 35px;
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            125deg,
+            #102943 0%,
+            #173557 62%,
+            #21476f 100%
+        );
+    border-radius: 12px;
+    box-shadow: 0 10px 26px rgba(23, 53, 87, 0.23);
+}
+
+.boas-vindas::before {
+    position: absolute;
+    top: -125px;
+    right: 105px;
+    width: 270px;
+    height: 270px;
+    border: 1px solid rgba(183, 214, 228, 0.20);
+    border-radius: 50%;
+    content: "";
+}
+
+.boas-vindas::after {
+    position: absolute;
+    right: -80px;
+    bottom: -120px;
+    width: 270px;
+    height: 270px;
+    border: 1px solid rgba(183, 214, 228, 0.15);
+    border-radius: 50%;
+    content: "";
+}
+
+.boas-vindas__conteudo,
+.boas-vindas__simbolo {
+    position: relative;
+    z-index: 1;
+}
+
+.texto-superior {
+    margin: 0 0 8px;
+    color: #b7d6e4;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.boas-vindas h2 {
+    max-width: 710px;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.55rem, 3vw, 2.08rem);
+    line-height: 1.18;
+}
+
+.boas-vindas p:not(.texto-superior) {
+    max-width: 720px;
+    margin: 10px 0 0;
+    color: rgba(255, 255, 255, 0.79);
+    font-size: 0.93rem;
+    line-height: 1.55;
+}
+
+.boas-vindas__simbolo {
+    display: grid;
+    flex: 0 0 auto;
+    width: 76px;
+    height: 76px;
+    color: #173557;
+    font-size: 2.3rem;
+    font-weight: 300;
+    background: #ffffff;
+    border-radius: 17px;
+    box-shadow: 0 10px 20px rgba(0, 20, 40, 0.18);
+    place-items: center;
+}
+
+/* Texto de orientação */
+
+.dashboard-info {
+    display: flex;
+    align-items: center;
+    padding: 3px 2px;
+    gap: 22px;
+}
+
+.dashboard-info__texto {
+    min-width: max-content;
+}
+
+.dashboard-info__etiqueta,
+.dashboard-acoes__etiqueta {
+    display: block;
+    margin-bottom: 5px;
+    color: #d51317;
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+}
+
+.dashboard-info h2,
+.dashboard-acoes h2 {
+    margin: 0;
+    color: #173557;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.dashboard-info p {
+    margin: 6px 0 0;
+    color: #637482;
+    font-size: 0.85rem;
+}
+
+.dashboard-info__linha {
+    width: 100%;
+    height: 1px;
+    background: #d5e0e6;
+}
+
+/* Cards de navegação */
+
+.atalhos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.atalhos .card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    min-height: 145px;
+    padding: 20px;
+    color: #173557;
+    background: #ffffff;
+    border: 1px solid #d5e0e6;
+    border-radius: 10px;
+    box-shadow: 0 5px 16px rgba(23, 53, 87, 0.09);
+    gap: 14px;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.atalhos .card:hover {
+    color: #173557;
+    border-color: #173557;
+    box-shadow: 0 10px 20px rgba(23, 53, 87, 0.15);
+    transform: translateY(-4px);
+}
+
+.card__icone {
+    display: grid;
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    font-size: 1.35rem;
+    background: #edf6fa;
+    border-radius: 10px;
+    place-items: center;
+}
+
+.card--unidades .card__icone {
+    background: #dceef5;
+}
+
+.card--equipamentos .card__icone {
+    background: #edf6fa;
+}
+
+.card--insumos .card__icone {
+    background: #fff0f0;
+}
+
+.card__conteudo {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.card__titulo {
+    color: #173557;
+    font-size: 0.98rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.card__descricao {
+    color: #637482;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.card__seta {
+    color: #d51317;
+    font-size: 1.45rem;
+    font-weight: 800;
+    transition: transform 160ms ease;
+}
+
+.atalhos .card:hover .card__seta {
+    transform: translateX(4px);
+}
+
+/* Faixa inferior do dashboard */
+
+.dashboard-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 28px;
+    background: #edf6fa;
+    border: 1px solid #b7d6e4;
+    border-radius: 11px;
+    gap: 20px;
+}
+
+.dashboard-acoes__botoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Responsividade */
+
+@media (max-width: 980px) {
+    .atalhos {
+        grid-template-columns: 1fr;
+    }
+
+    .atalhos .card {
+        min-height: 98px;
+    }
+}
+
+@media (max-width: 680px) {
+    .dashboard {
+        gap: 18px;
+    }
+
+    .boas-vindas {
+        align-items: flex-start;
+        min-height: 0;
+        padding: 27px 22px;
+    }
+
+    .boas-vindas__simbolo {
+        display: none;
+    }
+
+    .dashboard-info {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .dashboard-info__texto {
+        min-width: 0;
+    }
+
+    .dashboard-info__linha {
+        display: none;
+    }
+
+    .atalhos {
+        gap: 12px;
+    }
+
+    .atalhos .card {
+        min-height: 104px;
+        padding: 17px;
+    }
+
+    .dashboard-acoes {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 22px;
+    }
+
+    .dashboard-acoes__botoes {
+        width: 100%;
+    }
+
+    .dashboard-acoes__botoes .botao {
+        width: 100%;
+    }
+}
+
+/* ==========================================================
+   TOPO E MENU PRINCIPAL
+   Compatível com templates/base.html
+   ========================================================== */
+
+.topo {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    border-bottom: 1px solid #d5e0e6;
+    box-shadow: 0 2px 10px rgba(23, 53, 87, 0.08);
+}
+
+.topo::after {
+    display: block;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        #173557 0%,
+        #173557 80%,
+        #d51317 80%,
+        #d51317 100%
+    );
+    content: "";
+}
+
+.topo__conteudo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(100% - 48px, 1280px);
+    min-height: 84px;
+    margin: 0 auto;
+    gap: 26px;
+}
+
+/* Marca */
+
+.topo .marca {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    color: #173557;
+    text-decoration: none;
+    gap: 12px;
+}
+
+.topo .marca:hover {
+    color: #173557;
+}
+
+.topo .marca__logo {
+    display: block;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.topo .marca__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.topo .marca__texto strong {
+    color: #173557;
+    font-size: 1.12rem;
+    line-height: 1.1;
+}
+
+.topo .marca__texto small {
+    color: #637482;
+    font-size: 0.72rem;
+    line-height: 1.25;
+}
+
+/* Links */
+
+.topo .menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.topo .menu__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 10px;
+    color: #35516a;
+    font-size: 0.83rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    gap: 6px;
+    transition:
+        color 160ms ease,
+        background 160ms ease,
+        border-color 160ms ease;
+}
+
+.topo .menu__link:hover {
+    color: #173557;
+    background: #edf6fa;
+    border-color: #b7d6e4;
+}
+
+.topo .menu__link--ativo {
+    color: #ffffff;
+    background: #173557;
+    border-color: #173557;
+    box-shadow: 0 2px 5px rgba(23, 53, 87, 0.18);
+}
+
+.topo .menu__link--ativo:hover {
+    color: #ffffff;
+    background: #21476f;
+    border-color: #21476f;
+}
+
+.topo .menu__icone {
+    display: grid;
+    width: 17px;
+    height: 17px;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+    place-items: center;
+}
+
+.topo .menu__divisor {
+    width: 1px;
+    height: 24px;
+    margin: 0 4px;
+    background: #d5e0e6;
+}
+
+.topo .menu__link--sair {
+    color: #d51317;
+}
+
+.topo .menu__link--sair:hover {
+    color: #ffffff;
+    background: #d51317;
+    border-color: #d51317;
+}
+
+/* Tablets */
+
+@media (max-width: 1100px) {
+    .topo__conteudo {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 14px 0;
+        gap: 11px;
+    }
+
+    .topo .menu {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+/* Celulares */
+
+@media (max-width: 620px) {
+    .topo__conteudo {
+        width: min(100% - 28px, 1280px);
+    }
+
+    .topo .marca__logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .topo .marca__texto strong {
+        font-size: 1rem;
+    }
+
+    .topo .marca__texto small {
+        font-size: 0.66rem;
+    }
+
+    .topo .menu {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+    }
+
+    .topo .menu__link {
+        justify-content: center;
+        min-height: 38px;
+        padding: 0 7px;
+        font-size: 0.72rem;
+        gap: 4px;
+    }
+
+    .topo .menu__icone {
+        font-size: 0.86rem;
+    }
+
+    .topo .menu__divisor {
+        display: none;
+    }
+
+    .topo .menu__link--sair {
+        grid-column: span 3;
+    }
+}
+
+/* ==========================================================
+   RELATÓRIOS — CARDS COLORIDOS DE RESUMO
+   ========================================================== */
+
+.cards-resumo--colorido {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.cards-resumo--colorido .card-resumo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 118px;
+    margin: 0;
+    padding: 18px;
+    overflow: hidden;
+    color: #ffffff;
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px rgba(23, 53, 87, 0.16);
+    gap: 13px;
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.cards-resumo--colorido .card-resumo:hover {
+    box-shadow: 0 12px 25px rgba(23, 53, 87, 0.22);
+    transform: translateY(-3px);
+}
+
+.cards-resumo--colorido .card-resumo::after {
+    position: absolute;
+    top: -48px;
+    right: -42px;
+    width: 138px;
+    height: 138px;
+    background: rgba(255, 255, 255, 0.11);
+    border-radius: 50%;
+    content: "";
+}
+
+.cards-resumo--colorido .card-resumo__icone,
+.cards-resumo--colorido .card-resumo__conteudo {
+    position: relative;
+    z-index: 1;
+}
+
+.cards-resumo--colorido .card-resumo__icone {
+    display: grid;
+    flex: 0 0 47px;
+    width: 47px;
+    height: 47px;
+    color: #173557;
+    font-size: 1.28rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 11px;
+    place-items: center;
+}
+
+.cards-resumo--colorido .card-resumo__conteudo {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.cards-resumo--colorido .rotulo {
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.cards-resumo--colorido .card-resumo strong {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* Azul institucional — Unidades */
+
+.cards-resumo--colorido .card-resumo--unidades {
+    background: linear-gradient(135deg, #173557 0%, #285d91 100%);
+}
+
+/* Roxo — Equipamentos */
+
+.cards-resumo--colorido .card-resumo--equipamentos {
+    background: linear-gradient(135deg, #5b3b8c 0%, #8159b4 100%);
+}
+
+.cards-resumo--colorido .card-resumo--equipamentos .card-resumo__icone {
+    color: #5b3b8c;
+}
+
+/* Laranja — Insumos */
+
+.cards-resumo--colorido .card-resumo--insumos {
+    background: linear-gradient(135deg, #b76216 0%, #e18b36 100%);
+}
+
+.cards-resumo--colorido .card-resumo--insumos .card-resumo__icone {
+    color: #b76216;
+}
+
+/* Vermelho — Insumos vencidos */
+
+.cards-resumo--colorido .card-resumo--vencidos {
+    background: linear-gradient(135deg, #a91419 0%, #d51317 100%);
+}
+
+.cards-resumo--colorido .card-resumo--vencidos .card-resumo__icone {
+    color: #a91419;
+}
+
+/* Verde — Próximos do vencimento */
+
+.cards-resumo--colorido .card-resumo--proximos {
+    background: linear-gradient(135deg, #1f7048 0%, #38a56d 100%);
+}
+
+.cards-resumo--colorido .card-resumo--proximos .card-resumo__icone {
+    color: #1f7048;
+}
+
+/* Layout responsivo */
+
+@media (max-width: 1180px) {
+    .cards-resumo--colorido {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .cards-resumo--colorido {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 500px) {
+    .cards-resumo--colorido {
+        grid-template-columns: 1fr;
+    }
+
+    .cards-resumo--colorido .card-resumo {
+        min-height: 96px;
     }
 }
