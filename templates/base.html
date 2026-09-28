@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        {% block title %}Almoxarifado | Secretaria Municipal de Saúde{% endblock %}
+        {% block title %}
+            Almoxarifado | Secretaria Municipal de Saúde
+        {% endblock %}
     </title>
 
     <link
@@ -48,7 +50,7 @@
                 </a>
 
                 <a
-                    class="menu__link {% if request.endpoint == 'unidades' %}menu__link--ativo{% endif %}"
+                    class="menu__link {% if request.endpoint in ['unidades', 'editar_unidade'] %}menu__link--ativo{% endif %}"
                     href="{{ url_for('unidades') }}"
                 >
                     <span class="menu__icone" aria-hidden="true">🏥</span>
@@ -56,7 +58,7 @@
                 </a>
 
                 <a
-                    class="menu__link {% if request.endpoint == 'equipamentos' %}menu__link--ativo{% endif %}"
+                    class="menu__link {% if request.endpoint in ['equipamentos', 'editar_equipamento'] %}menu__link--ativo{% endif %}"
                     href="{{ url_for('equipamentos') }}"
                 >
                     <span class="menu__icone" aria-hidden="true">🩺</span>
@@ -64,7 +66,7 @@
                 </a>
 
                 <a
-                    class="menu__link {% if request.endpoint == 'insumos' %}menu__link--ativo{% endif %}"
+                    class="menu__link {% if request.endpoint in ['insumos', 'editar_insumo'] %}menu__link--ativo{% endif %}"
                     href="{{ url_for('insumos') }}"
                 >
                     <span class="menu__icone" aria-hidden="true">📦</span>
@@ -79,6 +81,26 @@
                     <span>Relatórios</span>
                 </a>
 
+                {% set papel_atual = session.get("papel_usuario", "")|trim|lower %}
+
+                {% if papel_atual in ["administrador", "administrador_principal"] %}
+                    <a
+                        class="menu__link {% if request.endpoint == 'configuracoes' %}menu__link--ativo{% endif %}"
+                        href="{{ url_for('configuracoes') }}"
+                    >
+                        <span class="menu__icone" aria-hidden="true">⚙️</span>
+                        <span>Configurações</span>
+                    </a>
+                {% endif %}
+
+                <a
+                    class="menu__link {% if request.endpoint in ['minha_conta', 'alterar_minha_senha'] %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('minha_conta') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">👤</span>
+                    <span>Minha conta</span>
+                </a>
+
                 <span class="menu__divisor" aria-hidden="true"></span>
 
                 <a
@@ -90,7 +112,6 @@
                 </a>
 
             </nav>
-
         </div>
     </header>
 
@@ -98,7 +119,10 @@
         {% with mensagens = get_flashed_messages(with_categories=true) %}
             {% if mensagens %}
                 {% for categoria, mensagem in mensagens %}
-                    <div class="alerta alerta--{{ categoria }}">
+                    <div
+                        class="alerta alerta--{{ categoria }}"
+                        role="alert"
+                    >
                         {{ mensagem }}
                     </div>
                 {% endfor %}

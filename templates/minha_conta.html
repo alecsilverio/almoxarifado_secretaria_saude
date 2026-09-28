@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Minha conta | Controle de Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">
+            👤 MINHA CONTA
+        </p>
+
+        <h2>Meus dados</h2>
+
+        <p>
+            Atualize suas informações pessoais e mantenha sua conta segura.
+        </p>
+    </div>
+</section>
+
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
+        <div>
+            <h3>Dados cadastrais</h3>
+
+            <p>
+                Você pode atualizar seu nome e e-mail institucional.
+            </p>
+        </div>
+
+        <span class="badge">
+            {{ usuario["papel"]|replace("_", " ")|title }}
+        </span>
+    </div>
+
+    {% if erro %}
+        <div class="alerta alerta--erro" role="alert">
+            {{ erro }}
+        </div>
+    {% endif %}
+
+    <form method="post" class="formulario">
+        <div class="campo">
+            <label for="nome">Nome completo</label>
+
+            <input
+                type="text"
+                id="nome"
+                name="nome"
+                value="{{ usuario['nome'] }}"
+                autocomplete="name"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="email">E-mail institucional</label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ usuario['email'] }}"
+                autocomplete="email"
+                autocapitalize="none"
+                spellcheck="false"
+                required
+            >
+        </div>
+
+        <div class="campo campo--full">
+            <div class="acoes">
+                <button
+                    class="botao botao--primario"
+                    type="submit"
+                >
+                    💾 Salvar alterações
+                </button>
+
+                <a
+                    class="botao botao--secundario"
+                    href="{{ url_for('alterar_minha_senha') }}"
+                >
+                    🔑 Alterar senha
+                </a>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}

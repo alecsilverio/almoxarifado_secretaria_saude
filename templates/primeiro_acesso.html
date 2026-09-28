@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login | Controle de Almoxarifado</title>
+    <title>Primeiro acesso | Controle de Almoxarifado</title>
 
     <link
         rel="icon"
@@ -33,10 +30,8 @@
         </header>
 
         <main class="formulario-login">
-            <section
-                class="login-card"
-                aria-labelledby="titulo-login"
-            >
+            <section class="login-card" aria-labelledby="titulo-primeiro-acesso">
+
                 <div class="login-card__marca">
                     <img
                         src="{{ url_for('static', filename='logoprefeitura.jpg') }}"
@@ -47,24 +42,21 @@
 
                 <div class="login-card__titulo">
                     <p class="login-card__subtitulo">
-                        SISTEMA INSTITUCIONAL
+                        🔐 SEGURANÇA DA CONTA
                     </p>
 
-                    <h1 id="titulo-login">
-                        Controle de Almoxarifado
+                    <h1 id="titulo-primeiro-acesso">
+                        Crie sua nova senha
                     </h1>
 
                     <p class="login-card__descricao">
-                        Acesse com seu e-mail institucional e senha.
+                        Este é seu primeiro acesso. Por segurança, defina uma
+                        senha pessoal antes de entrar no sistema.
                     </p>
                 </div>
 
                 {% if erro %}
-                    <div
-                        class="alerta alerta--erro"
-                        role="alert"
-                        aria-live="assertive"
-                    >
+                    <div class="alerta alerta--erro" role="alert">
                         {{ erro }}
                     </div>
                 {% endif %}
@@ -75,7 +67,6 @@
                             <div
                                 class="alerta alerta--{{ categoria }}"
                                 role="alert"
-                                aria-live="polite"
                             >
                                 {{ mensagem }}
                             </div>
@@ -83,72 +74,53 @@
                     {% endif %}
                 {% endwith %}
 
-                <form
-                    method="post"
-                    class="login-form"
-                    autocomplete="on"
-                >
-                    {# Quando ativar Flask-WTF/CSRF, use esta linha:
-                    {{ form.csrf_token }}
-                    #}
-
+                <form method="post" class="login-form">
                     <div class="campo">
-                        <label for="usuario">
-                            E-mail institucional
+                        <label for="nova_senha">
+                            Nova senha
                         </label>
 
                         <div class="campo__entrada">
-                            <span
-                                class="campo__icone"
-                                aria-hidden="true"
-                            >
-                                @
-                            </span>
-
-                            <input
-                                type="email"
-                                id="usuario"
-                                name="usuario"
-                                value="{{ request.form.get('usuario', '') }}"
-                                placeholder="nome.sobrenome@treslagoas.ms.gov.br"
-                                autocomplete="username"
-                                autocapitalize="none"
-                                spellcheck="false"
-                                inputmode="email"
-                                required
-                            >
-                        </div>
-                    </div>
-
-                    <div class="campo">
-                        <label for="senha">
-                            Senha
-                        </label>
-
-                        <div class="campo__entrada">
-                            <span
-                                class="campo__icone"
-                                aria-hidden="true"
-                            >
-                                ●
+                            <span class="campo__icone" aria-hidden="true">
+                                🔑
                             </span>
 
                             <input
                                 type="password"
-                                id="senha"
-                                name="senha"
-                                placeholder="Digite sua senha"
-                                autocomplete="current-password"
+                                id="nova_senha"
+                                name="nova_senha"
+                                placeholder="Mínimo de 8 caracteres"
+                                minlength="8"
+                                autocomplete="new-password"
                                 required
                             >
                         </div>
                     </div>
 
-                    <button
-                        class="botao-login"
-                        type="submit"
-                    >
-                        <span>Entrar no sistema</span>
+                    <div class="campo">
+                        <label for="confirmar_senha">
+                            Confirme a nova senha
+                        </label>
+
+                        <div class="campo__entrada">
+                            <span class="campo__icone" aria-hidden="true">
+                                🔒
+                            </span>
+
+                            <input
+                                type="password"
+                                id="confirmar_senha"
+                                name="confirmar_senha"
+                                placeholder="Digite a mesma senha novamente"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <button class="botao-login" type="submit">
+                        <span>Salvar nova senha</span>
 
                         <span
                             class="botao-login__seta"
@@ -160,8 +132,8 @@
                 </form>
 
                 <p class="login-card__seguranca">
-                    <span aria-hidden="true">🔒</span>
-                    Acesso restrito a usuários autorizados.
+                    <span aria-hidden="true">🛡️</span>
+                    Não compartilhe sua senha com outras pessoas.
                 </p>
             </section>
         </main>

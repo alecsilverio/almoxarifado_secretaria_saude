@@ -16,6 +16,7 @@ from pathlib import Path
 from flask import (
     Flask,
     Response,
+    abort,
     flash,
     redirect,
     render_template,
@@ -97,6 +98,9 @@ def login():
     """Tela de login dos usuários do sistema."""
 
     if session.get("logged_in"):
+        if session.get("primeiro_acesso"):
+            return redirect(url_for("primeiro_acesso"))
+
         return redirect(url_for("index"))
 
     erro = None
@@ -112,7 +116,14 @@ def login():
             with get_db_connection() as conn:
                 usuario = conn.execute(
                     """
-                    SELECT *
+                    SELECT
+                        id_usuario,
+                        nome,
+                        email,
+                        senha_hash,
+                        papel,
+                        ativo,
+                        primeiro_acesso
                     FROM usuarios
                     WHERE email = ?
                     """,
@@ -123,32 +134,59 @@ def login():
                 erro = "E-mail ou senha inválidos."
 
             elif not usuario["ativo"]:
-                erro = "Este usuário está desativado. Procure o administrador principal."
+                erro = (
+                    "Este usuário está desativado. "
+                    "Procure o administrador principal."
+                )
 
             elif not check_password_hash(usuario["senha_hash"], senha):
                 erro = "E-mail ou senha inválidos."
 
             else:
                 session.clear()
+
                 session["logged_in"] = True
                 session["id_usuario"] = usuario["id_usuario"]
                 session["nome_usuario"] = usuario["nome"]
                 session["email_usuario"] = usuario["email"]
                 session["papel_usuario"] = usuario["papel"]
+                session["primeiro_acesso"] = bool(
+                    usuario["primeiro_acesso"]
+                )
+
                 session.permanent = True
 
-                flash(f"Bem-vindo(a), {usuario['nome']}!", "sucesso")
+                if session["primeiro_acesso"]:
+                    flash(
+                        "Por segurança, crie uma nova senha para continuar.",
+                        "aviso",
+                    )
+
+                    return redirect(url_for("primeiro_acesso"))
+
+                flash(
+                    f"Bem-vindo(a), {usuario['nome']}!",
+                    "sucesso",
+                )
 
                 proxima_pagina = request.args.get("next")
 
-                if proxima_pagina and proxima_pagina.startswith("/"):
+                if (
+                    proxima_pagina
+                    and proxima_pagina.startswith("/")
+                    and not proxima_pagina.startswith("//")
+                ):
                     return redirect(proxima_pagina)
 
                 return redirect(url_for("index"))
 
-    return render_template("login.html", erro=erro)
+    return render_template(
+        "login.html",
+        erro=erro,
+    )
 
 def criar_usuarios_iniciais():
+    
     """
     Cria os três usuários institucionais apenas se ainda não existirem.
 
@@ -1278,6 +1316,7 @@ def excluir_insumo(id_insumo):
 
     return redirect(url_for("insumos"))
 
+
 # =========================================================
 # EXECUÇÃO LOCAL
 # =========================================================
@@ -1645,7 +1684,19 @@ def atualizar_banco_unidades():
 
         conn.commit()
 
+def atualizar_banco_usuarios():
+    with get_db_connection() as conn:
+        colunas = [
+            linha["name"]
+            for linha in conn.execute(
+                "PRAGMA table_info(usuarios)"
+            ).fetchall()
+        ]
 
+        if "ultimo_acesso" not in colunas:
+            conn.execute(
+                "ALTER TABLE usuarios ADD COLUMN ultimo_acesso TEXT"
+            )
 
 def redefinir_senhas_iniciais():
     """Redefine temporariamente as senhas dos três usuários institucionais."""
@@ -1682,9 +1733,325 @@ def redefinir_senhas_iniciais():
                 ),
             )
 
+# =========================================================
+# CONFIGURAÇÕES — CONTROLE DE ACESSO
+# =========================================================
+
+def login_obrigatorio(funcao):
+    @wraps(funcao)
+    def decorada(*args, **kwargs):
+        if not session.get("logged_in"):
+            flash("Faça login para acessar o sistema.", "erro")
+
+            return redirect(
+                url_for(
+                    "login",
+                    next=request.path,
+                )
+            )
+
+        return funcao(*args, **kwargs)
+
+    return decorada
+
+
+def administrador_obrigatorio(funcao):
+    @wraps(funcao)
+    def decorada(*args, **kwargs):
+        if not session.get("logged_in"):
+            flash("Faça login para acessar o sistema.", "erro")
+            return redirect(url_for("login", next=request.path))
+
+        papeis_autorizados = {
+            "administrador",
+            "administrador_principal",
+        }
+
+        papel_usuario = session.get(
+            "papel_usuario",
+            "",
+        ).strip().lower()
+
+        if papel_usuario not in papeis_autorizados:
+            abort(403)
+
+        return funcao(*args, **kwargs)
+
+    return decorada
+
+@app.route("/configuracoes")
+@administrador_obrigatorio
+def configuracoes():
+    with get_db_connection() as conn:
+        usuarios = conn.execute(
+            """
+            SELECT
+                id_usuario,
+                nome,
+                email,
+                papel,
+                ativo,
+                primeiro_acesso,
+                criado_em
+            FROM usuarios
+            ORDER BY nome COLLATE NOCASE
+            """
+        ).fetchall()
+
+    return render_template(
+        "configuracoes.html",
+        usuarios=usuarios,
+    )
+
+@app.route("/primeiro-acesso", methods=["GET", "POST"])
+@login_obrigatorio
+def primeiro_acesso():
+    """Obriga o usuário a substituir a senha temporária."""
+
+    if not session.get("primeiro_acesso"):
+        return redirect(url_for("index"))
+
+    erro = None
+
+    if request.method == "POST":
+        nova_senha = request.form.get("nova_senha", "")
+        confirmar_senha = request.form.get("confirmar_senha", "")
+
+        if not nova_senha or not confirmar_senha:
+            erro = "Preencha os dois campos de senha."
+
+        elif len(nova_senha) < 8:
+            erro = "A nova senha deve ter pelo menos 8 caracteres."
+
+        elif nova_senha != confirmar_senha:
+            erro = "A confirmação de senha não confere."
+
+        else:
+            with get_db_connection() as conn:
+                conn.execute(
+                    """
+                    UPDATE usuarios
+                    SET
+                        senha_hash = ?,
+                        primeiro_acesso = 0
+                    WHERE id_usuario = ?
+                    """,
+                    (
+                        generate_password_hash(nova_senha),
+                        session["id_usuario"],
+                    ),
+                )
+
+            session["primeiro_acesso"] = 0
+
+            flash(
+                "Senha criada com sucesso. Bem-vindo(a) ao sistema!",
+                "sucesso",
+            )
+
+            return redirect(url_for("index"))
+
+    return render_template(
+        "primeiro_acesso.html",
+        erro=erro,
+    )
+
+
+from functools import wraps
+
+def senha_atualizada_obrigatoria(funcao):
+    @wraps(funcao)
+    def decorada(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("login"))
+
+        if session.get("primeiro_acesso"):
+            flash(
+                "Por segurança, defina uma nova senha para continuar.",
+                "aviso",
+            )
+            return redirect(url_for("primeiro_acesso"))
+
+        return funcao(*args, **kwargs)
+
+    return decorada
+
+@app.route("/minha-conta", methods=["GET", "POST"])
+@login_obrigatorio
+@senha_atualizada_obrigatoria
+def minha_conta():
+    """Permite que o usuário atualize apenas seus próprios dados."""
+
+    usuario_id = session["id_usuario"]
+    erro = None
+
+    with get_db_connection() as conn:
+        usuario = conn.execute(
+            """
+            SELECT
+                id_usuario,
+                nome,
+                email,
+                papel
+            FROM usuarios
+            WHERE id_usuario = ?
+            """,
+            (usuario_id,),
+        ).fetchone()
+
+    if usuario is None:
+        session.clear()
+
+        flash(
+            "Sua sessão não é mais válida. Faça login novamente.",
+            "erro",
+        )
+
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        nome = request.form.get("nome", "").strip()
+        email = request.form.get("email", "").strip().lower()
+
+        if not nome:
+            erro = "Informe seu nome completo."
+
+        elif not email:
+            erro = "Informe seu e-mail institucional."
+
+        else:
+            try:
+                with get_db_connection() as conn:
+                    conn.execute(
+                        """
+                        UPDATE usuarios
+                        SET
+                            nome = ?,
+                            email = ?
+                        WHERE id_usuario = ?
+                        """,
+                        (
+                            nome,
+                            email,
+                            usuario_id,
+                        ),
+                    )
+
+                session["nome_usuario"] = nome
+                session["email_usuario"] = email
+
+                flash(
+                    "Seus dados foram atualizados com sucesso.",
+                    "sucesso",
+                )
+
+                return redirect(url_for("minha_conta"))
+
+            except sqlite3.IntegrityError:
+                erro = (
+                    "Este e-mail já está cadastrado para outro usuário."
+                )
+
+        usuario = {
+            "id_usuario": usuario_id,
+            "nome": nome,
+            "email": email,
+            "papel": usuario["papel"],
+        }
+
+    return render_template(
+        "minha_conta.html",
+        usuario=usuario,
+        erro=erro,
+    )
+
+@app.route("/minha-conta/alterar-senha", methods=["GET", "POST"])
+@login_obrigatorio
+@senha_atualizada_obrigatoria
+def alterar_minha_senha():
+    """Permite que o usuário logado altere sua própria senha."""
+
+    erro = None
+    usuario_id = session["id_usuario"]
+
+    if request.method == "POST":
+        senha_atual = request.form.get("senha_atual", "")
+        nova_senha = request.form.get("nova_senha", "")
+        confirmar_senha = request.form.get("confirmar_senha", "")
+
+        if not senha_atual:
+            erro = "Informe sua senha atual."
+
+        elif not nova_senha or not confirmar_senha:
+            erro = "Preencha a nova senha e a confirmação."
+
+        elif len(nova_senha) < 8:
+            erro = "A nova senha deve ter pelo menos 8 caracteres."
+
+        elif nova_senha != confirmar_senha:
+            erro = "A confirmação de senha não confere."
+
+        elif nova_senha == senha_atual:
+            erro = "A nova senha deve ser diferente da senha atual."
+
+        else:
+            with get_db_connection() as conn:
+                usuario = conn.execute(
+                    """
+                    SELECT senha_hash
+                    FROM usuarios
+                    WHERE id_usuario = ?
+                    """,
+                    (usuario_id,),
+                ).fetchone()
+
+                if usuario is None:
+                    session.clear()
+
+                    flash(
+                        "Sua sessão não é mais válida. Faça login novamente.",
+                        "erro",
+                    )
+
+                    return redirect(url_for("login"))
+
+                if not check_password_hash(
+                    usuario["senha_hash"],
+                    senha_atual,
+                ):
+                    erro = "A senha atual está incorreta."
+
+                else:
+                    conn.execute(
+                        """
+                        UPDATE usuarios
+                        SET senha_hash = ?
+                        WHERE id_usuario = ?
+                        """,
+                        (
+                            generate_password_hash(nova_senha),
+                            usuario_id,
+                        ),
+                    )
+
+                    flash(
+                        "Sua senha foi alterada com sucesso.",
+                        "sucesso",
+                    )
+
+                    return redirect(url_for("minha_conta"))
+
+    return render_template(
+        "alterar_senha.html",
+        erro=erro,
+    )
+
+
+
+
 if __name__ == "__main__":
     init_db()
+    atualizar_banco_usuarios()
     atualizar_banco_unidades()
     criar_usuarios_iniciais()
-    redefinir_senhas_iniciais()
     app.run(debug=True)

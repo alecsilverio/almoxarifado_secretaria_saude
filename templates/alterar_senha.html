@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Alterar senha | Controle de Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">
+            🔑 MINHA CONTA
+        </p>
+
+        <h2>Alterar senha</h2>
+
+        <p>
+            Confirme sua senha atual antes de criar uma nova senha.
+        </p>
+    </div>
+</section>
+
+<section class="painel-relatorio painel--compacto">
+    {% if erro %}
+        <div class="alerta alerta--erro" role="alert">
+            {{ erro }}
+        </div>
+    {% endif %}
+
+    <form method="post" class="formulario">
+        <div class="campo campo--full">
+            <label for="senha_atual">Senha atual</label>
+
+            <input
+                type="password"
+                id="senha_atual"
+                name="senha_atual"
+                autocomplete="current-password"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="nova_senha">Nova senha</label>
+
+            <input
+                type="password"
+                id="nova_senha"
+                name="nova_senha"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="confirmar_senha">
+                Confirme a nova senha
+            </label>
+
+            <input
+                type="password"
+                id="confirmar_senha"
+                name="confirmar_senha"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <div class="campo campo--full">
+            <div class="acoes">
+                <button
+                    class="botao botao--primario"
+                    type="submit"
+                >
+                    🔐 Atualizar senha
+                </button>
+
+                <a
+                    class="botao botao--secundario"
+                    href="{{ url_for('minha_conta') }}"
+                >
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
