@@ -1,0 +1,26 @@
+# Ambiente virtual do Python
+venv/
+
+# Cache gerado pelo Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos com dados locais, credenciais ou configurações
+.env
+instance/
+
+# Banco de dados SQLite local
+almoxarifado.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos criados pelo VS Code e outros editores
+.vscode/
+.idea/
+
+# Arquivos do Windows e macOS
+Thumbs.db
+.DS_Store

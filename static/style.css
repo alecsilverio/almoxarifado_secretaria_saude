@@ -1781,3 +1781,22 @@ td button {
         min-height: 96px;
     }
 }
+
+/* Mensagem de segurança abaixo do login */
+
+.login-card__seguranca {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0 0;
+    padding-top: 17px;
+    color: #647583;
+    font-size: 0.74rem;
+    text-align: center;
+    border-top: 1px solid #e8eef1;
+    gap: 7px;
+}
+
+.login-card__seguranca span {
+    font-size: 0.84rem;
+}

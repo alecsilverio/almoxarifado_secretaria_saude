@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Configurações | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">
+            ⚙️ CONFIGURAÇÕES
+        </p>
+
+        <h2>Usuários e acesso</h2>
+
+        <p>
+            Gerencie os usuários autorizados a utilizar o Sistema de Controle
+            de Almoxarifado.
+        </p>
+    </div>
+</section>
+
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
+        <div>
+            <h3>Usuários cadastrados</h3>
+
+            <p>
+                Por segurança, senhas e hashes de senha não são exibidos.
+            </p>
+        </div>
+    </div>
+
+    <div class="tabela-responsiva">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail institucional</th>
+                    <th>Papel</th>
+                    <th>Status</th>
+                    <th>Primeiro acesso</th>
+                    <th>Criado em</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>
+                            <strong>{{ usuario["nome"] }}</strong>
+                        </td>
+
+                        <td>{{ usuario["email"] }}</td>
+
+                        <td>
+                            <span class="badge">
+                                {{ usuario["papel"]|capitalize }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if usuario["ativo"] %}
+                                <span class="status status--valido">
+                                    Ativo
+                                </span>
+                            {% else %}
+                                <span class="status status--vencido">
+                                    Inativo
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if usuario["primeiro_acesso"] %}
+                                <span class="status status--proximo">
+                                    Pendente
+                                </span>
+                            {% else %}
+                                <span class="status status--valido">
+                                    Concluído
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ usuario["criado_em"] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="sem-registros">
+                            Nenhum usuário cadastrado.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

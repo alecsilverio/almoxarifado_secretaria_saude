@@ -2,6 +2,7 @@
 -- Equipamentos por Unidade + Insumos Centralizados
 -- SQLite compatível com Python/Flask
 
+-- Tabela de usuarios
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -17,6 +18,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 CREATE INDEX IF NOT EXISTS idx_usuarios_email
 ON usuarios (email);
+
+
 
 -- Tabela de Unidades
 CREATE TABLE IF NOT EXISTS unidades (
