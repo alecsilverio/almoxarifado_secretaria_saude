@@ -103,3 +103,116 @@ ON insumos(vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_insumos_unidade
 ON insumos(id_unidade);
+
+-- Cadastro de OS
+CREATE TABLE IF NOT EXISTS ordens_servico (
+    id_os INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    numero_os TEXT NOT NULL,
+    empresa_prestadora TEXT NOT NULL,
+
+    id_unidade INTEGER,
+    id_equipamento INTEGER,
+
+    solicitante TEXT NOT NULL,
+    tipo_servico TEXT NOT NULL,
+
+    problema_relatado TEXT,
+    observacoes TEXT,
+
+    status TEXT NOT NULL DEFAULT 'Aberta',
+
+    data_abertura TEXT NOT NULL,
+    data_conclusao TEXT,
+
+    criado_por INTEGER NOT NULL,
+    criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_unidade)
+        REFERENCES unidades(id_unidade),
+
+    FOREIGN KEY (id_equipamento)
+        REFERENCES equipamentos(id_equipamento),
+
+    FOREIGN KEY (criado_por)
+        REFERENCES usuarios(id_usuario),
+
+    UNIQUE (empresa_prestadora, numero_os)
+);
+
+CREATE TABLE IF NOT EXISTS anexos_ordem_servico (
+    id_anexo INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    id_os INTEGER NOT NULL,
+
+    nome_original TEXT NOT NULL,
+    nome_arquivo TEXT NOT NULL,
+    caminho_arquivo TEXT NOT NULL,
+
+    tipo_arquivo TEXT NOT NULL,
+    tamanho_bytes INTEGER NOT NULL,
+
+    enviado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_os)
+        REFERENCES ordens_servico(id_os)
+        ON DELETE CASCADE
+);
+
+-- =========================================================
+-- ORDENS DE SERVIÇO E ANEXOS
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS ordens_servico (
+    id_os INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    numero_os TEXT NOT NULL,
+    empresa_prestadora TEXT NOT NULL,
+
+    id_unidade INTEGER,
+    id_equipamento INTEGER,
+
+    solicitante TEXT NOT NULL,
+    tipo_servico TEXT NOT NULL,
+
+    problema_relatado TEXT,
+    observacoes TEXT,
+
+    status TEXT NOT NULL DEFAULT 'Aberta',
+
+    data_abertura TEXT NOT NULL,
+    data_conclusao TEXT,
+
+    criado_por INTEGER NOT NULL,
+    criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_unidade)
+        REFERENCES unidades(id_unidade),
+
+    FOREIGN KEY (id_equipamento)
+        REFERENCES equipamentos(id_equipamento),
+
+    FOREIGN KEY (criado_por)
+        REFERENCES usuarios(id_usuario),
+
+    UNIQUE (empresa_prestadora, numero_os)
+);
+
+CREATE TABLE IF NOT EXISTS anexos_ordem_servico (
+    id_anexo INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    id_os INTEGER NOT NULL,
+
+    nome_original TEXT NOT NULL,
+    nome_arquivo TEXT NOT NULL,
+    caminho_arquivo TEXT NOT NULL,
+
+    tipo_arquivo TEXT NOT NULL,
+    tamanho_bytes INTEGER NOT NULL,
+
+    enviado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_os)
+        REFERENCES ordens_servico(id_os)
+        ON DELETE CASCADE
+);

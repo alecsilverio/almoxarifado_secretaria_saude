@@ -24,3 +24,6 @@ almoxarifado.db
 # Arquivos do Windows e macOS
 Thumbs.db
 .DS_Store
+
+# PDFs enviados para ordens de serviço
+uploads/

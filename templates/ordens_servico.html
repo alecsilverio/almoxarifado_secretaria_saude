@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Ordens de serviço | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">
+            🛠️ MANUTENÇÃO
+        </p>
+
+        <h2>Ordens de serviço</h2>
+
+        <p>
+            Acompanhe as solicitações de manutenção dos equipamentos clínicos.
+        </p>
+    </div>
+
+    {% set papel_atual = session.get("papel_usuario", "")|trim|lower %}
+
+    {% if papel_atual in ["administrador", "administrador_principal"] %}
+        <a
+            class="botao botao--primario"
+            href="{{ url_for('nova_ordem_servico') }}"
+        >
+            ＋ Nova OS
+        </a>
+    {% endif %}
+</section>
+
+<section class="grade-cards">
+    <article class="card-resumo">
+        <span class="card-resumo__icone">📋</span>
+
+        <div>
+            <span class="card-resumo__rotulo">Total</span>
+            <strong>{{ resumo["total"] or 0 }}</strong>
+        </div>
+    </article>
+
+    <article class="card-resumo">
+        <span class="card-resumo__icone">🟡</span>
+
+        <div>
+            <span class="card-resumo__rotulo">Abertas</span>
+            <strong>{{ resumo["abertas"] or 0 }}</strong>
+        </div>
+    </article>
+
+    <article class="card-resumo">
+        <span class="card-resumo__icone">🔵</span>
+
+        <div>
+            <span class="card-resumo__rotulo">Em andamento</span>
+            <strong>{{ resumo["em_andamento"] or 0 }}</strong>
+        </div>
+    </article>
+
+    <article class="card-resumo">
+        <span class="card-resumo__icone">✅</span>
+
+        <div>
+            <span class="card-resumo__rotulo">Concluídas</span>
+            <strong>{{ resumo["concluidas"] or 0 }}</strong>
+        </div>
+    </article>
+</section>
+
+<section class="painel-relatorio">
+    <form method="get" class="filtros">
+        <div class="campo">
+            <label for="busca">Buscar</label>
+
+            <input
+                type="search"
+                id="busca"
+                name="busca"
+                value="{{ busca }}"
+                placeholder="OS, empresa, unidade ou equipamento"
+            >
+        </div>
+
+        <div class="campo">
+            <label for="status">Status</label>
+
+            <select id="status" name="status">
+                <option value="">Todos os status</option>
+
+                <option
+                    value="Aberta"
+                    {% if status_atual == "Aberta" %}selected{% endif %}
+                >
+                    Aberta
+                </option>
+
+                <option
+                    value="Em andamento"
+                    {% if status_atual == "Em andamento" %}selected{% endif %}
+                >
+                    Em andamento
+                </option>
+
+                <option
+                    value="Aguardando peça"
+                    {% if status_atual == "Aguardando peça" %}selected{% endif %}
+                >
+                    Aguardando peça
+                </option>
+
+                <option
+                    value="Concluída"
+                    {% if status_atual == "Concluída" %}selected{% endif %}
+                >
+                    Concluída
+                </option>
+
+                <option
+                    value="Cancelada"
+                    {% if status_atual == "Cancelada" %}selected{% endif %}
+                >
+                    Cancelada
+                </option>
+            </select>
+        </div>
+
+        <div class="acoes acoes--fim">
+            <button class="botao botao--primario" type="submit">
+                🔎 Filtrar
+            </button>
+
+            <a
+                class="botao botao--secundario"
+                href="{{ url_for('ordens_servico') }}"
+            >
+                Limpar
+            </a>
+        </div>
+    </form>
+</section>
+
+<section class="painel-relatorio">
+    <div class="tabela-responsiva">
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>OS</th>
+                    <th>Empresa</th>
+                    <th>Equipamento</th>
+                    <th>Unidade</th>
+                    <th>Abertura</th>
+                    <th>Status</th>
+                    <th>PDF</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for ordem in ordens %}
+                    <tr>
+                        <td>#{{ ordem["numero_os"] }}</td>
+
+                        <td>{{ ordem["empresa_prestadora"] }}</td>
+
+                        <td>
+                            {{ ordem["nome_equipamento"] or "Não informado" }}
+
+                            {% if ordem["numero_patrimonio"] %}
+                                <small>
+                                    Patrimônio:
+                                    {{ ordem["numero_patrimonio"] }}
+                                </small>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ ordem["nome_unidade"] or "Não informada" }}
+                        </td>
+
+                        <td>{{ ordem["data_abertura"] }}</td>
+
+                        <td>
+                            <span class="badge badge--status">
+                                {{ ordem["status"] }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if ordem["id_anexo"] %}
+                                <span title="PDF anexado">📎</span>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a
+                                class="botao botao--secundario botao--pequeno"
+                                href="{{ url_for('detalhe_ordem_servico', id_os=ordem['id_os']) }}"
+                            >
+                                Ver
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="tabela__vazia">
+                            Nenhuma ordem de serviço encontrada.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

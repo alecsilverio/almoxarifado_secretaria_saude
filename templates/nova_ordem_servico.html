@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Nova OS | Almoxarifado{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">
+            🛠️ MANUTENÇÃO
+        </p>
+
+        <h2>Nova ordem de serviço</h2>
+
+        <p>
+            Cadastre a solicitação e anexe o PDF recebido da empresa.
+        </p>
+    </div>
+
+    <a
+        class="botao botao--secundario"
+        href="{{ url_for('ordens_servico') }}"
+    >
+        ← Voltar
+    </a>
+</section>
+
+<section class="painel-relatorio">
+    {% if erro %}
+        <div class="alerta alerta--erro" role="alert">
+            {{ erro }}
+        </div>
+    {% endif %}
+
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        class="formulario"
+    >
+        <div class="campo">
+            <label for="numero_os">Número da OS</label>
+
+            <input
+                type="text"
+                id="numero_os"
+                name="numero_os"
+                value="{{ request.form.get('numero_os', '') }}"
+                placeholder="Ex.: 2975"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="empresa_prestadora">
+                Empresa prestadora
+            </label>
+
+            <input
+                type="text"
+                id="empresa_prestadora"
+                name="empresa_prestadora"
+                value="{{ request.form.get('empresa_prestadora', '') }}"
+                placeholder="Ex.: JV Equipamentos"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="id_unidade">Unidade solicitante</label>
+
+            <select id="id_unidade" name="id_unidade" required>
+                <option value="">Selecione a unidade</option>
+
+                {% for unidade in unidades %}
+                    <option
+                        value="{{ unidade['id_unidade'] }}"
+                        {% if request.form.get('id_unidade') == unidade['id_unidade']|string %}selected{% endif %}
+                    >
+                        {{ unidade["nome"] }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="id_equipamento">Equipamento</label>
+
+            <select
+                id="id_equipamento"
+                name="id_equipamento"
+                required
+            >
+                <option value="">Selecione o equipamento</option>
+
+                {% for equipamento in equipamentos %}
+                    <option
+                        value="{{ equipamento['id_equipamento'] }}"
+                        {% if request.form.get('id_equipamento') == equipamento['id_equipamento']|string %}selected{% endif %}
+                    >
+                        {{ equipamento["nome"] }}
+
+                        {% if equipamento["numero_patrimonio"] %}
+                            · Patrimônio
+                            {{ equipamento["numero_patrimonio"] }}
+                        {% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="solicitante">Solicitante</label>
+
+            <input
+                type="text"
+                id="solicitante"
+                name="solicitante"
+                value="{{ request.form.get('solicitante', '') }}"
+                placeholder="Nome da unidade ou responsável"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="tipo_servico">Tipo de serviço</label>
+
+            <select id="tipo_servico" name="tipo_servico" required>
+                <option value="">Selecione</option>
+
+                {% set tipo_atual = request.form.get('tipo_servico', '') %}
+
+                <option
+                    value="Instalação"
+                    {% if tipo_atual == "Instalação" %}selected{% endif %}
+                >
+                    Instalação
+                </option>
+
+                <option
+                    value="Manutenção preventiva"
+                    {% if tipo_atual == "Manutenção preventiva" %}selected{% endif %}
+                >
+                    Manutenção preventiva
+                </option>
+
+                <option
+                    value="Manutenção corretiva"
+                    {% if tipo_atual == "Manutenção corretiva" %}selected{% endif %}
+                >
+                    Manutenção corretiva
+                </option>
+
+                <option
+                    value="Calibração"
+                    {% if tipo_atual == "Calibração" %}selected{% endif %}
+                >
+                    Calibração
+                </option>
+
+                <option
+                    value="Inspeção"
+                    {% if tipo_atual == "Inspeção" %}selected{% endif %}
+                >
+                    Inspeção
+                </option>
+
+                <option
+                    value="Outro"
+                    {% if tipo_atual == "Outro" %}selected{% endif %}
+                >
+                    Outro
+                </option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="status">Status inicial</label>
+
+            <select id="status" name="status" required>
+                {% set status_atual = request.form.get('status', 'Aberta') %}
+
+                <option
+                    value="Aberta"
+                    {% if status_atual == "Aberta" %}selected{% endif %}
+                >
+                    Aberta
+                </option>
+
+                <option
+                    value="Em andamento"
+                    {% if status_atual == "Em andamento" %}selected{% endif %}
+                >
+                    Em andamento
+                </option>
+
+                <option
+                    value="Aguardando peça"
+                    {% if status_atual == "Aguardando peça" %}selected{% endif %}
+                >
+                    Aguardando peça
+                </option>
+
+                <option
+                    value="Concluída"
+                    {% if status_atual == "Concluída" %}selected{% endif %}
+                >
+                    Concluída
+                </option>
+
+                <option
+                    value="Cancelada"
+                    {% if status_atual == "Cancelada" %}selected{% endif %}
+                >
+                    Cancelada
+                </option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="data_abertura">
+                Data e hora de abertura
+            </label>
+
+            <input
+                type="datetime-local"
+                id="data_abertura"
+                name="data_abertura"
+                value="{{ request.form.get('data_abertura', '') }}"
+                required
+            >
+        </div>
+
+        <div class="campo campo--full">
+            <label for="problema_relatado">
+                Problema relatado
+            </label>
+
+            <input
+                type="text"
+                id="problema_relatado"
+                name="problema_relatado"
+                value="{{ request.form.get('problema_relatado', '') }}"
+                placeholder="Ex.: Instalação de ar-condicionado"
+            >
+        </div>
+
+        <div class="campo campo--full">
+            <label for="observacoes">Observações</label>
+
+            <textarea
+                id="observacoes"
+                name="observacoes"
+                rows="5"
+                placeholder="Descreva o serviço solicitado e outras informações relevantes."
+            >{{ request.form.get('observacoes', '') }}</textarea>
+        </div>
+
+        <div class="campo campo--full">
+            <label for="arquivo_os">PDF da ordem de serviço</label>
+
+            <input
+                type="file"
+                id="arquivo_os"
+                name="arquivo_os"
+                accept=".pdf,application/pdf"
+                required
+            >
+
+            <small>
+                Envie somente PDF com até 10 MB.
+            </small>
+        </div>
+
+        <div class="campo campo--full">
+            <div class="acoes">
+                <button class="botao botao--primario" type="submit">
+                    💾 Cadastrar OS
+                </button>
+
+                <a
+                    class="botao botao--secundario"
+                    href="{{ url_for('ordens_servico') }}"
+                >
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}
+    OS #{{ ordem["numero_os"] }} | Almoxarifado
+{% endblock %}
+
+{% block content %}
+<section class="cabecalho-pagina">
+    <div>
+        <p class="texto-superior texto-superior--azul">
+            🛠️ ORDEM DE SERVIÇO
+        </p>
+
+        <h2>
+            OS #{{ ordem["numero_os"] }}
+        </h2>
+
+        <p>
+            {{ ordem["empresa_prestadora"] }}
+            · Aberta em {{ ordem["data_abertura"] }}
+        </p>
+    </div>
+
+    <a
+        class="botao botao--secundario"
+        href="{{ url_for('ordens_servico') }}"
+    >
+        ← Voltar para OS
+    </a>
+</section>
+
+{% if erro %}
+    <div class="alerta alerta--erro" role="alert">
+        {{ erro }}
+    </div>
+{% endif %}
+
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
+        <div>
+            <h3>Dados da ordem</h3>
+            <p>Informações registradas no cadastro da OS.</p>
+        </div>
+
+        <span class="badge badge--status">
+            {{ ordem["status"] }}
+        </span>
+    </div>
+
+    <dl class="detalhes">
+        <div>
+            <dt>Empresa prestadora</dt>
+            <dd>{{ ordem["empresa_prestadora"] }}</dd>
+        </div>
+
+        <div>
+            <dt>Solicitante</dt>
+            <dd>{{ ordem["solicitante"] }}</dd>
+        </div>
+
+        <div>
+            <dt>Unidade</dt>
+            <dd>{{ ordem["nome_unidade"] or "Não informada" }}</dd>
+        </div>
+
+        <div>
+            <dt>Equipamento</dt>
+            <dd>
+                {{ ordem["nome_equipamento"] or "Não informado" }}
+
+                {% if ordem["numero_patrimonio"] %}
+                    · Patrimônio {{ ordem["numero_patrimonio"] }}
+                {% endif %}
+            </dd>
+        </div>
+
+        <div>
+            <dt>Tipo de serviço</dt>
+            <dd>{{ ordem["tipo_servico"] }}</dd>
+        </div>
+
+        <div>
+            <dt>Data de conclusão</dt>
+            <dd>
+                {{ ordem["data_conclusao"] or "Ainda não concluída" }}
+            </dd>
+        </div>
+
+        <div class="detalhes__full">
+            <dt>Problema relatado</dt>
+            <dd>
+                {{ ordem["problema_relatado"] or "Não informado" }}
+            </dd>
+        </div>
+
+        <div class="detalhes__full">
+            <dt>Observações</dt>
+            <dd>
+                {{ ordem["observacoes"] or "Nenhuma observação." }}
+            </dd>
+        </div>
+
+        <div>
+            <dt>Cadastrado por</dt>
+            <dd>
+                {{ ordem["nome_criador"] or "Usuário não encontrado" }}
+            </dd>
+        </div>
+
+        <div>
+            <dt>Data do cadastro</dt>
+            <dd>{{ ordem["criado_em"] }}</dd>
+        </div>
+    </dl>
+</section>
+
+<section class="painel-relatorio">
+    <div class="cabecalho-relatorio">
+        <div>
+            <h3>Documentos anexados</h3>
+            <p>PDFs relacionados a esta ordem de serviço.</p>
+        </div>
+    </div>
+
+    {% for anexo in anexos %}
+        <div class="linha-anexo">
+            <div>
+                <strong>📄 {{ anexo["nome_original"] }}</strong>
+
+                <small>
+                    Enviado em {{ anexo["enviado_em"] }}
+                    ·
+                    {{ (anexo["tamanho_bytes"] / 1024 / 1024)|round(2) }}
+                    MB
+                </small>
+            </div>
+
+            <a
+                class="botao botao--secundario botao--pequeno"
+                href="{{ url_for('baixar_anexo_ordem_servico', id_anexo=anexo['id_anexo']) }}"
+            >
+                ⬇ Baixar PDF
+            </a>
+        </div>
+    {% else %}
+        <p>Nenhum documento anexado.</p>
+    {% endfor %}
+</section>
+
+{% set papel_atual = session.get("papel_usuario", "")|trim|lower %}
+
+{% if papel_atual in ["administrador", "administrador_principal"] %}
+    <section class="painel-relatorio">
+        <div class="cabecalho-relatorio">
+            <div>
+                <h3>Atualizar andamento</h3>
+                <p>
+                    Atualize o status e as observações do atendimento.
+                </p>
+            </div>
+        </div>
+
+        <form method="post" class="formulario">
+            <div class="campo">
+                <label for="status">Status</label>
+
+                <select id="status" name="status" required>
+                    <option
+                        value="Aberta"
+                        {% if ordem["status"] == "Aberta" %}selected{% endif %}
+                    >
+                        Aberta
+                    </option>
+
+                    <option
+                        value="Em andamento"
+                        {% if ordem["status"] == "Em andamento" %}selected{% endif %}
+                    >
+                        Em andamento
+                    </option>
+
+                    <option
+                        value="Aguardando peça"
+                        {% if ordem["status"] == "Aguardando peça" %}selected{% endif %}
+                    >
+                        Aguardando peça
+                    </option>
+
+                    <option
+                        value="Concluída"
+                        {% if ordem["status"] == "Concluída" %}selected{% endif %}
+                    >
+                        Concluída
+                    </option>
+
+                    <option
+                        value="Cancelada"
+                        {% if ordem["status"] == "Cancelada" %}selected{% endif %}
+                    >
+                        Cancelada
+                    </option>
+                </select>
+            </div>
+
+            <div class="campo campo--full">
+                <label for="observacoes">Observações</label>
+
+                <textarea
+                    id="observacoes"
+                    name="observacoes"
+                    rows="5"
+                >{{ ordem["observacoes"] or "" }}</textarea>
+            </div>
+
+            <div class="campo campo--full">
+                <div class="acoes">
+                    <button class="botao botao--primario" type="submit">
+                        💾 Salvar atualização
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+{% endif %}
+{% endblock %}

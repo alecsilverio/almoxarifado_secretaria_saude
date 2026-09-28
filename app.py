@@ -12,6 +12,8 @@ from io import StringIO
 from datetime import timedelta, datetime
 from functools import wraps
 from pathlib import Path
+from uuid import uuid4
+
 
 from flask import (
     Flask,
@@ -21,9 +23,12 @@ from flask import (
     redirect,
     render_template,
     request,
+    send_from_directory,
     session,
     url_for,
 )
+
+from werkzeug.utils import secure_filename
 
 from werkzeug.security import (
     check_password_hash,
@@ -44,6 +49,23 @@ DATABASE = BASE_DIR / "almoxarifado.db"
 SCHEMA = BASE_DIR / "schema_almoxarifado.sql"
 
 app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+UPLOAD_OS_FOLDER = os.path.join(
+    BASE_DIR,
+    "uploads",
+    "ordens_servico",
+)
+
+ALLOWED_OS_EXTENSIONS = {"pdf"}
+
+app.config["UPLOAD_OS_FOLDER"] = UPLOAD_OS_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
+
+os.makedirs(
+    app.config["UPLOAD_OS_FOLDER"],
+    exist_ok=True,
+)
 
 # Em produção, defina uma SECRET_KEY segura por variável de ambiente.
 app.secret_key = os.environ.get(
@@ -1351,7 +1373,7 @@ def relatorios():
                 u.tipo_unidade,
                 u.endereco
             ORDER BY u.nome
-            """ 
+            """
         ).fetchall()
 
         relatorio_equipamentos = conn.execute(
@@ -1417,6 +1439,77 @@ def relatorios():
             """
         ).fetchall()
 
+        relatorio_os = conn.execute(
+            """
+            SELECT
+                os.id_os,
+                os.numero_os,
+                os.empresa_prestadora,
+                os.solicitante,
+                os.tipo_servico,
+                os.problema_relatado,
+                os.status,
+                os.data_abertura,
+                os.data_conclusao,
+
+                u.codigo AS codigo_unidade,
+                u.nome AS nome_unidade,
+
+                e.patrimonio,
+                e.nome AS nome_equipamento,
+                e.modelo AS modelo_equipamento,
+                e.marca AS marca_equipamento,
+
+                usuario.nome AS cadastrado_por,
+
+                COUNT(anexo.id_anexo) AS total_anexos
+
+            FROM ordens_servico AS os
+
+            LEFT JOIN unidades AS u
+                ON u.id_unidade = os.id_unidade
+
+            LEFT JOIN equipamentos AS e
+                ON e.id_equipamento = os.id_equipamento
+
+            LEFT JOIN usuarios AS usuario
+                ON usuario.id_usuario = os.criado_por
+
+            LEFT JOIN anexos_ordem_servico AS anexo
+                ON anexo.id_os = os.id_os
+
+            GROUP BY
+                os.id_os,
+                os.numero_os,
+                os.empresa_prestadora,
+                os.solicitante,
+                os.tipo_servico,
+                os.problema_relatado,
+                os.status,
+                os.data_abertura,
+                os.data_conclusao,
+                u.codigo,
+                u.nome,
+                e.patrimonio,
+                e.nome,
+                e.modelo,
+                e.marca,
+                usuario.nome
+
+            ORDER BY
+                CASE os.status
+                    WHEN 'Aberta' THEN 1
+                    WHEN 'Em andamento' THEN 2
+                    WHEN 'Aguardando peça' THEN 3
+                    WHEN 'Concluída' THEN 4
+                    WHEN 'Cancelada' THEN 5
+                    ELSE 6
+                END,
+                os.data_abertura DESC,
+                os.id_os DESC
+            """
+        ).fetchall()
+
         resumo = conn.execute(
             """
             SELECT
@@ -1441,12 +1534,63 @@ def relatorios():
             """
         ).fetchone()
 
+        resumo_os = conn.execute(
+            """
+            SELECT
+                COUNT(*) AS total_os,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Aberta'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS abertas,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Em andamento'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS em_andamento,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Aguardando peça'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS aguardando_peca,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Concluída'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS concluidas,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Cancelada'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS canceladas
+
+            FROM ordens_servico
+            """
+        ).fetchone()
+
     return render_template(
         "relatorios.html",
         resumo=resumo,
+        resumo_os=resumo_os,
         relatorio_unidades=relatorio_unidades,
         relatorio_equipamentos=relatorio_equipamentos,
         relatorio_insumos=relatorio_insumos,
+        relatorio_os=relatorio_os,
     )
 
 @app.route("/relatorios/unidades/csv")
@@ -1779,6 +1923,35 @@ def administrador_obrigatorio(funcao):
 
     return decorada
 
+def arquivo_pdf_permitido(arquivo):
+    """Verifica se o arquivo enviado possui extensão PDF."""
+
+    if arquivo is None:
+        return False
+
+    if not arquivo.filename:
+        return False
+
+    if "." not in arquivo.filename:
+        return False
+
+    extensao = arquivo.filename.rsplit(".", 1)[1].lower()
+
+    return extensao in ALLOWED_OS_EXTENSIONS
+
+@app.errorhandler(413)
+def arquivo_muito_grande(erro):
+    """Exibe mensagem amigável para upload acima de 10 MB."""
+
+    flash(
+        "O arquivo enviado é maior que o limite de 10 MB.",
+        "erro",
+    )
+
+    return redirect(
+        request.referrer or url_for("ordens_servico")
+    )
+
 @app.route("/configuracoes")
 @administrador_obrigatorio
 def configuracoes():
@@ -2046,7 +2219,571 @@ def alterar_minha_senha():
         erro=erro,
     )
 
+@app.route("/ordens-servico")
+@login_obrigatorio
+@senha_atualizada_obrigatoria
+def ordens_servico():
+    """Lista as ordens de serviço cadastradas."""
 
+    busca = request.args.get("busca", "").strip()
+    status = request.args.get("status", "").strip()
+
+    sql = """
+        SELECT
+            os.id_os,
+            os.numero_os,
+            os.empresa_prestadora,
+            os.solicitante,
+            os.tipo_servico,
+            os.problema_relatado,
+            os.status,
+            os.data_abertura,
+            os.data_conclusao,
+
+            u.nome AS nome_unidade,
+
+            e.nome AS nome_equipamento,
+            e.patrimonio,
+
+            a.id_anexo
+
+        FROM ordens_servico AS os
+
+        LEFT JOIN unidades AS u
+            ON u.id_unidade = os.id_unidade
+
+        LEFT JOIN equipamentos AS e
+            ON e.id_equipamento = os.id_equipamento
+
+        LEFT JOIN anexos_ordem_servico AS a
+            ON a.id_os = os.id_os
+
+        WHERE 1 = 1
+    """
+
+    parametros = []
+
+    if busca:
+        sql += """
+            AND (
+                os.numero_os LIKE ?
+                OR os.empresa_prestadora LIKE ?
+                OR os.solicitante LIKE ?
+                OR u.nome LIKE ?
+                OR e.nome LIKE ?
+                OR e.patrimonio LIKE ?
+            )
+        """
+
+        termo_busca = f"%{busca}%"
+
+        parametros.extend(
+            [
+                termo_busca,
+                termo_busca,
+                termo_busca,
+                termo_busca,
+                termo_busca,
+                termo_busca,
+            ]
+        )
+
+    if status:
+        sql += " AND os.status = ? "
+        parametros.append(status)
+
+    sql += """
+        ORDER BY
+            CASE os.status
+                WHEN 'Aberta' THEN 1
+                WHEN 'Em andamento' THEN 2
+                WHEN 'Aguardando peça' THEN 3
+                WHEN 'Concluída' THEN 4
+                WHEN 'Cancelada' THEN 5
+                ELSE 6
+            END,
+            os.data_abertura DESC,
+            os.id_os DESC
+    """
+
+    with get_db_connection() as conn:
+        ordens = conn.execute(sql, parametros).fetchall()
+
+        resumo = conn.execute(
+            """
+            SELECT
+                COUNT(*) AS total,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Aberta'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS abertas,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Em andamento'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS em_andamento,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Aguardando peça'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS aguardando_peca,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Concluída'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS concluidas
+
+            FROM ordens_servico
+            """
+        ).fetchone()
+
+    return render_template(
+        "ordens_servico.html",
+        ordens=ordens,
+        resumo=resumo,
+        busca=busca,
+        status_atual=status,
+    )
+
+@app.route("/ordens-servico/nova", methods=["GET", "POST"])
+@login_obrigatorio
+@senha_atualizada_obrigatoria
+@administrador_obrigatorio
+def nova_ordem_servico():
+    """Cadastra uma ordem de serviço e anexa seu PDF original."""
+
+    erro = None
+
+    with get_db_connection() as conn:
+        unidades = conn.execute(
+            """
+            SELECT
+                id_unidade,
+                nome
+            FROM unidades
+            ORDER BY nome
+            """
+        ).fetchall()
+
+        equipamentos = conn.execute(
+            """
+            SELECT
+                id_equipamento,
+                nome,
+                patrimonio
+            FROM equipamentos
+            ORDER BY nome
+            """
+        ).fetchall()
+
+    if request.method == "POST":
+        numero_os = request.form.get("numero_os", "").strip()
+
+        empresa_prestadora = request.form.get(
+            "empresa_prestadora",
+            "",
+        ).strip()
+
+        id_unidade = request.form.get("id_unidade", "").strip()
+
+        id_equipamento = request.form.get(
+            "id_equipamento",
+            "",
+        ).strip()
+
+        solicitante = request.form.get("solicitante", "").strip()
+
+        tipo_servico = request.form.get(
+            "tipo_servico",
+            "",
+        ).strip()
+
+        problema_relatado = request.form.get(
+            "problema_relatado",
+            "",
+        ).strip()
+
+        observacoes = request.form.get(
+            "observacoes",
+            "",
+        ).strip()
+
+        status = request.form.get(
+            "status",
+            "Aberta",
+        ).strip()
+
+        data_abertura = request.form.get(
+            "data_abertura",
+            "",
+        ).strip()
+
+        arquivo_os = request.files.get("arquivo_os")
+
+        status_validos = {
+            "Aberta",
+            "Em andamento",
+            "Aguardando peça",
+            "Concluída",
+            "Cancelada",
+        }
+
+        if not numero_os:
+            erro = "Informe o número da ordem de serviço."
+
+        elif not empresa_prestadora:
+            erro = "Informe a empresa prestadora."
+
+        elif not solicitante:
+            erro = "Informe o solicitante."
+
+        elif not tipo_servico:
+            erro = "Informe o tipo de serviço."
+
+        elif status not in status_validos:
+            erro = "Informe um status válido."
+
+        elif not data_abertura:
+            erro = "Informe a data de abertura."
+
+        elif not id_unidade:
+            erro = "Selecione a unidade."
+
+        elif not id_equipamento:
+            erro = "Selecione o equipamento."
+
+        elif not arquivo_pdf_permitido(arquivo_os):
+            erro = "Anexe um arquivo PDF válido da ordem de serviço."
+
+        if erro is None:
+            nome_original = arquivo_os.filename
+            nome_seguro = secure_filename(nome_original)
+
+            if not nome_seguro:
+                nome_seguro = "ordem_servico.pdf"
+
+            nome_arquivo = (
+                f"os_{uuid4().hex}_{nome_seguro}"
+            )
+
+            caminho_completo = os.path.join(
+                app.config["UPLOAD_OS_FOLDER"],
+                nome_arquivo,
+            )
+
+            try:
+                id_unidade = int(id_unidade)
+
+                id_equipamento = int(id_equipamento)
+
+                data_abertura_formatada = datetime.strptime(
+                    data_abertura,
+                    "%Y-%m-%dT%H:%M",
+                ).strftime("%Y-%m-%d %H:%M:%S")
+
+            except ValueError:
+                erro = (
+                    "Confira a unidade, o equipamento "
+                    "e a data de abertura."
+                )
+
+            if erro is None:
+                try:
+                    arquivo_os.save(caminho_completo)
+
+                    tamanho_bytes = os.path.getsize(
+                        caminho_completo
+                    )
+
+                    with get_db_connection() as conn:
+                        cursor = conn.execute(
+                            """
+                            INSERT INTO ordens_servico (
+                                numero_os,
+                                empresa_prestadora,
+                                id_unidade,
+                                id_equipamento,
+                                solicitante,
+                                tipo_servico,
+                                problema_relatado,
+                                observacoes,
+                                status,
+                                data_abertura,
+                                criado_por
+                            )
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """,
+                            (
+                                numero_os,
+                                empresa_prestadora,
+                                id_unidade,
+                                id_equipamento,
+                                solicitante,
+                                tipo_servico,
+                                problema_relatado,
+                                observacoes,
+                                status,
+                                data_abertura_formatada,
+                                session["id_usuario"],
+                            ),
+                        )
+
+                        id_os = cursor.lastrowid
+
+                        conn.execute(
+                            """
+                            INSERT INTO anexos_ordem_servico (
+                                id_os,
+                                nome_original,
+                                nome_arquivo,
+                                caminho_arquivo,
+                                tipo_arquivo,
+                                tamanho_bytes
+                            )
+                            VALUES (?, ?, ?, ?, ?, ?)
+                            """,
+                            (
+                                id_os,
+                                nome_original,
+                                nome_arquivo,
+                                nome_arquivo,
+                                "application/pdf",
+                                tamanho_bytes,
+                            ),
+                        )
+
+                    flash(
+                        "Ordem de serviço cadastrada com sucesso.",
+                        "sucesso",
+                    )
+
+                    return redirect(
+                        url_for(
+                            "detalhe_ordem_servico",
+                            id_os=id_os,
+                        )
+                    )
+
+                except sqlite3.IntegrityError:
+                    if os.path.exists(caminho_completo):
+                        os.remove(caminho_completo)
+
+                    erro = (
+                        "Já existe uma OS com esse número "
+                        "para esta empresa."
+                    )
+
+                except OSError:
+                    if os.path.exists(caminho_completo):
+                        os.remove(caminho_completo)
+
+                    erro = (
+                        "Não foi possível salvar o PDF enviado. "
+                        "Tente novamente."
+                    )
+
+    return render_template(
+        "nova_ordem_servico.html",
+        unidades=unidades,
+        equipamentos=equipamentos,
+        erro=erro,
+    )
+
+@app.route(
+    "/ordens-servico/<int:id_os>",
+    methods=["GET", "POST"],
+)
+@login_obrigatorio
+@senha_atualizada_obrigatoria
+def detalhe_ordem_servico(id_os):
+    """Mostra uma OS e permite atualizar seu andamento."""
+
+    erro = None
+
+    status_validos = {
+        "Aberta",
+        "Em andamento",
+        "Aguardando peça",
+        "Concluída",
+        "Cancelada",
+    }
+
+    if request.method == "POST":
+        papel_atual = session.get(
+            "papel_usuario",
+            "",
+        ).strip().lower()
+
+        if papel_atual not in {
+            "administrador",
+            "administrador_principal",
+        }:
+            flash(
+                "Somente administradores podem atualizar uma OS.",
+                "erro",
+            )
+
+            return redirect(
+                url_for(
+                    "detalhe_ordem_servico",
+                    id_os=id_os,
+                )
+            )
+
+        status = request.form.get("status", "").strip()
+
+        observacoes = request.form.get(
+            "observacoes",
+            "",
+        ).strip()
+
+        if status not in status_validos:
+            erro = "Selecione um status válido."
+
+        else:
+            data_conclusao = None
+
+            if status == "Concluída":
+                data_conclusao = datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+
+            with get_db_connection() as conn:
+                conn.execute(
+                    """
+                    UPDATE ordens_servico
+                    SET
+                        status = ?,
+                        observacoes = ?,
+                        data_conclusao = ?
+                    WHERE id_os = ?
+                    """,
+                    (
+                        status,
+                        observacoes,
+                        data_conclusao,
+                        id_os,
+                    ),
+                )
+
+            flash(
+                "Ordem de serviço atualizada com sucesso.",
+                "sucesso",
+            )
+
+            return redirect(
+                url_for(
+                    "detalhe_ordem_servico",
+                    id_os=id_os,
+                )
+            )
+
+    with get_db_connection() as conn:
+        ordem = conn.execute(
+            """
+            SELECT
+                os.*,
+
+                u.nome AS nome_unidade,
+
+                e.nome AS nome_equipamento,
+                e.patrimonio,
+
+                usuario.nome AS nome_criador
+
+            FROM ordens_servico AS os
+
+            LEFT JOIN unidades AS u
+                ON u.id_unidade = os.id_unidade
+
+            LEFT JOIN equipamentos AS e
+                ON e.id_equipamento = os.id_equipamento
+
+            LEFT JOIN usuarios AS usuario
+                ON usuario.id_usuario = os.criado_por
+
+            WHERE os.id_os = ?
+            """,
+            (id_os,),
+        ).fetchone()
+
+        anexos = conn.execute(
+            """
+            SELECT
+                id_anexo,
+                nome_original,
+                tipo_arquivo,
+                tamanho_bytes,
+                enviado_em
+            FROM anexos_ordem_servico
+            WHERE id_os = ?
+            ORDER BY enviado_em DESC
+            """,
+            (id_os,),
+        ).fetchall()
+
+    if ordem is None:
+        flash(
+            "Ordem de serviço não encontrada.",
+            "erro",
+        )
+
+        return redirect(url_for("ordens_servico"))
+
+    return render_template(
+        "detalhe_ordem_servico.html",
+        ordem=ordem,
+        anexos=anexos,
+        erro=erro,
+    )
+
+@app.route(
+    "/ordens-servico/anexos/<int:id_anexo>/download"
+)
+@login_obrigatorio
+@senha_atualizada_obrigatoria
+def baixar_anexo_ordem_servico(id_anexo):
+    """Faz download protegido de um PDF de OS."""
+
+    with get_db_connection() as conn:
+        anexo = conn.execute(
+            """
+            SELECT
+                nome_original,
+                nome_arquivo
+            FROM anexos_ordem_servico
+            WHERE id_anexo = ?
+            """,
+            (id_anexo,),
+        ).fetchone()
+
+    if anexo is None:
+        flash(
+            "Anexo não encontrado.",
+            "erro",
+        )
+
+        return redirect(url_for("ordens_servico"))
+
+    return send_from_directory(
+        app.config["UPLOAD_OS_FOLDER"],
+        anexo["nome_arquivo"],
+        as_attachment=True,
+        download_name=anexo["nome_original"],
+    )
 
 
 if __name__ == "__main__":

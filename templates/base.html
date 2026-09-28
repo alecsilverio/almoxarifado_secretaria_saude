@@ -74,6 +74,14 @@
                 </a>
 
                 <a
+                    class="menu__link {% if request.endpoint in ['ordens_servico', 'nova_ordem_servico', 'detalhe_ordem_servico', 'baixar_anexo_ordem_servico'] %}menu__link--ativo{% endif %}"
+                    href="{{ url_for('ordens_servico') }}"
+                >
+                    <span class="menu__icone" aria-hidden="true">🛠️</span>
+                    <span>Ordens de serviço</span>
+                </a>
+
+                <a
                     class="menu__link {% if request.endpoint == 'relatorios' %}menu__link--ativo{% endif %}"
                     href="{{ url_for('relatorios') }}"
                 >
